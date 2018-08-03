@@ -4,7 +4,8 @@
 \alias{powerTOSTpaired}
 \title{Power analysis for TOST for dependent t-test (Cohen's dz).}
 \usage{
-powerTOSTpaired(alpha, statistical_power, N, low_eqbound_dz, high_eqbound_dz)
+powerTOSTpaired(alpha, statistical_power, N, low_eqbound_dz,
+  high_eqbound_dz)
 }
 \arguments{
 \item{alpha}{alpha used for the test (e.g., 0.05)}
@@ -18,7 +19,7 @@ powerTOSTpaired(alpha, statistical_power, N, low_eqbound_dz, high_eqbound_dz)
 \item{high_eqbound_dz}{upper equivalence bounds (e.g., 0.5) expressed in standardized mean difference (Cohen's dz)}
 }
 \value{
-Calculate either achieved power, equivalence bounds, or required N.
+Calculate either achieved power, equivalence bounds, or required N, assuming a true effect size of 0.
 Returns a string summarizing the power analysis, and a numeric variable for number of observations, equivalence bounds, or power.
 }
 \description{

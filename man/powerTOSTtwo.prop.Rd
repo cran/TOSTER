@@ -4,8 +4,8 @@
 \alias{powerTOSTtwo.prop}
 \title{Power analysis for TOST for difference between two proportions using Z-test (pooled)}
 \usage{
-powerTOSTtwo.prop(alpha, statistical_power, prop1, prop2, N, low_eqbound_prop,
-  high_eqbound_prop)
+powerTOSTtwo.prop(alpha, statistical_power, prop1, prop2, N,
+  low_eqbound_prop, high_eqbound_prop)
 }
 \arguments{
 \item{alpha}{alpha used for the test (e.g., 0.05)}
@@ -23,7 +23,7 @@ powerTOSTtwo.prop(alpha, statistical_power, prop1, prop2, N, low_eqbound_prop,
 \item{high_eqbound_prop}{upper equivalence bounds (e.g., 0.05) expressed in proportion}
 }
 \value{
-Calculate either achieved power, equivalence bounds, or required N.
+Calculate either achieved power, equivalence bounds, or required N, assuming a true effect size of 0.
 Returns a string summarizing the power analysis, and a numeric variable for number of observations, equivalence bounds, or power.
 }
 \description{
