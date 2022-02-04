@@ -4,8 +4,18 @@
 \alias{TOSTtwo.prop}
 \title{TOST function for two proportions (raw scores)}
 \usage{
-TOSTtwo.prop(prop1, prop2, n1, n2, low_eqbound, high_eqbound, alpha,
-  plot = TRUE, verbose = TRUE)
+TOSTtwo.prop(
+  prop1,
+  prop2,
+  n1,
+  n2,
+  low_eqbound,
+  high_eqbound,
+  alpha,
+  ci_type = "normal",
+  plot = TRUE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{prop1}{proportion of group 1}
@@ -21,6 +31,8 @@ TOSTtwo.prop(prop1, prop2, n1, n2, low_eqbound, high_eqbound, alpha,
 \item{high_eqbound}{upper equivalence bounds (e.g., 0.1) expressed in proportions}
 
 \item{alpha}{alpha level (default = 0.05)}
+
+\item{ci_type}{confidence interval type (default = "normal"). "wilson" produces Wilson score intervals with a Yates continuity correction while "normal" calculates the simple asymptotic method with no continuity correction.}
 
 \item{plot}{set whether results should be plotted (plot = TRUE) or not (plot = FALSE) - defaults to TRUE}
 

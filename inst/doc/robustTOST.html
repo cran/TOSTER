@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Aaron R. Caldwell" />
+
+<meta name="date" content="2022-02-04" />
+
+<title>Robust TOST Procedures</title>
+
+<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Robust TOST Procedures</h1>
+<h4 class="author">Aaron R. Caldwell</h4>
+<h4 class="date">2022-02-04</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#wilcoxon-tost">Wilcoxon TOST</a>
+<ul>
+<li><a href="#rank-biserial-correlation">Rank-Biserial Correlation</a></li>
+<li><a href="#confidence-intervals">Confidence Intervals</a></li>
+</ul></li>
+<li><a href="#boostrap-tost">Boostrap TOST</a>
+<ul>
+<li><a href="#two-sample-algorithm">Two Sample Algorithm</a></li>
+<li><a href="#example">Example</a></li>
+</ul></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+
+<p>In this package there are currently 2 functions that provide robust alternatives to the <code>t_TOST</code> function.</p>
+<div id="wilcoxon-tost" class="section level1">
+<h1>Wilcoxon TOST</h1>
+<p>The Wilcoxon group of tests (includes Mann-Whitney U-test) provide a non-parametric test of differences between groups, or within samples, based on ranks. This provides a test of location shift, which is a fancy way of saying differences in the center of the distribution (i.e., in parametric tests the location is mean). With TOST, there are two separate tests of directional location shift to determine if the location shift is within (equivalence) or outside (minimal effect). The exact calculations can be explored via the documentation of the <code>wilcox.test</code> function.</p>
+<p>In the TOSTER package, we accomplish this with the <code>wilcox_TOST</code> function. Overall, this function operates extremely similar to the <code>t_TOST</code> function. However, the standardized mean difference (SMD) is <em>not</em> calculated. Instead the rank-biserial correlation is calculated for <em>all</em> types of comparisons (e.g., two sample, one sample, and paired samples). Also, there is no plotting capability at this time for the output of this function.</p>
+<p>As an example, we can use the sleep data to make a non-parametric comparison of equivalence.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&#39;sleep&#39;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(TOSTER)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>test1 <span class="ot">=</span> <span class="fu">wilcox_TOST</span>(<span class="at">formula =</span> extra <span class="sc">~</span> group,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> sleep,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">paired =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">low_eqbound =</span> <span class="sc">-</span>.<span class="dv">5</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                      <span class="at">high_eqbound =</span> .<span class="dv">5</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(test1)</span></code></pre></div>
+<pre><code>## 
+## Wilcoxon rank sum test with continuity correction
+## Hypothesis Tested: Equivalence
+## Equivalence Bounds (raw):-0.500 &amp; 0.500
+## Alpha Level:0.05
+## The equivalence test was non-significant W = 20.000, p = 8.94e-01
+## The null hypothesis test was non-significant W = 25.500, p = 6.93e-02
+## NHST: don&#39;t reject null significance hypothesis that the effect is equal to zero 
+## TOST: don&#39;t reject null equivalence hypothesis
+## 
+## TOST Results 
+##            statistic    p.value
+## NHST            25.5 0.06932758
+## TOST Lower      34.0 0.89385308
+## TOST Upper      20.0 0.01287404
+## 
+## Effect Sizes 
+##                            estimate   lower.ci    upper.ci conf.level
+## Median of Differences     -1.346388 -3.3999651 -0.09995341        0.9
+## rank-biserial correlation -0.490000 -0.7492521 -0.10053222        0.9</code></pre>
+<div id="rank-biserial-correlation" class="section level2">
+<h2>Rank-Biserial Correlation</h2>
+<p>The standardized effect size reported for the <code>wilcox_TOST</code> procedure is the rank-biserial correlation. This is a fairly intuitive measure of effect size which has the same interpretation of the common language effect size <span class="citation">(Kerby 2014)</span>. However, instead of assuming normality and equal variances, the rank-biserial correlation calculates the number of favorable (positive) and unfavorable (negative) pairs based on their respective ranks.</p>
+<p>Overall, the correlation is calculated as the proportion of favorable pairs minus the unfavorable pairs.</p>
+<p><span class="math display">\[
+r_{biserial} = f_{pairs} - u_{pairs}
+\]</span></p>
+</div>
+<div id="confidence-intervals" class="section level2">
+<h2>Confidence Intervals</h2>
+<p>The Fisher approximation is used to calculate the confidence intervals.</p>
+<p>For paired samples the standard error is calculated as the following:</p>
+<p><span class="math display">\[
+SE_r = \sqrt{ \frac {(2 \cdot nd^3 + 3 \cdot nd^2 + nd) / 6} {(nd^2 + nd) / 2} }
+\]</span></p>
+<p>wherein, nd represents the total count not equal to zero.</p>
+<p>For independent samples, the standard error is calculated as the following:</p>
+<p><span class="math display">\[
+SE_r = \sqrt{\frac {(n1 + n2 + 1)} { (3 \cdot n1 \cdot n2)}}
+\]</span></p>
+<p>The confidence intervals can then be calculated by transforming the estimate.</p>
+<p><span class="math display">\[
+r_z = atanh(r_{biserial})
+\]</span></p>
+<p>Then the confidence interval can be calculated and back transformed.</p>
+<p><span class="math display">\[
+r_{CI} = tanh(r_z  \pm  Z_{(1 - \alpha / 2)} \cdot SE_r)
+\]</span></p>
+<p>We hope a bootstrapped version of this confidence interval will be added in future updates.</p>
+</div>
+</div>
+<div id="boostrap-tost" class="section level1">
+<h1>Boostrap TOST</h1>
+<p>The boostrap is a simulation based technique, derived from resampling with replacement, designed for statistical estimation and inference. Bootsrapping techniques are very useful because they are considered somewhat robust to the violations of assumptions for a simple t-test. Therefore we added a bootsrap option, <code>boot_t_TOST</code> to the package to provide another robust alternative to the <code>t_TOST</code> function.</p>
+<p>In this function we provide a percentile bootstrap solution outlined by <span class="citation">Efron and Tibshirani (1993)</span> (see chapter 16, page 220). The bootstrapped p-values are derived from the “studentized” version of a test of mean differences outlined by <span class="citation">Efron and Tibshirani (1993)</span>. Overall, the results should be similar to the results of <code>t_TOST</code>. <strong>However</strong>, for paired samples, the Cohen’s d(rm) effect size <em>cannot</em> be calculated at this time.</p>
+<div id="two-sample-algorithm" class="section level2">
+<h2>Two Sample Algorithm</h2>
+<ol style="list-style-type: decimal">
+<li><p>Form B bootstrap data sets from x* and y* wherein x* is sampled with replacement from <span class="math inline">\(\tilde x_1,\tilde x_2, ... \tilde x_n\)</span> and y* is sampled with replacement from <span class="math inline">\(\tilde y_1,\tilde y_2, ... \tilde y_n\)</span></p></li>
+<li><p>t is then evaluated on each sample, but the mean of each sample (y or x) and the overall average (z) are subtracted from each</p></li>
+</ol>
+<p><span class="math display">\[
+t(z^{*b}) = \frac {(\bar x^*-\bar x - \bar z) - (\bar y^*-\bar y - \bar z)}{\sqrt {sd_y^*/n_y + sd_x^*/n_x}}
+\]</span></p>
+<ol start="3" style="list-style-type: decimal">
+<li>An approximate p-value can then be calculated as the number of bootstrapped results greater than the observed t-statistic from the sample.</li>
+</ol>
+<p><span class="math display">\[
+p_{boot} = \frac {\#t(z^{*b}) \ge t_{sample}}{B}
+\]</span></p>
+<p>The same process is completed for the one sample case but with the one sample solution for the equation outlined by <span class="math inline">\(t(z^{*b})\)</span>. The paired sample case in this bootstrap procedure is equivalent to the one sample solution because the test is based on the difference scores.</p>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>Again, we can use the sleep data to see the bootstrapped results. Notice that the plots show how the resampling via boostrapping indicates the instability of Hedges’ d(z).</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&#39;sleep&#39;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>test1 <span class="ot">=</span> <span class="fu">boot_t_TOST</span>(<span class="at">formula =</span> extra <span class="sc">~</span> group,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> sleep,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">paired =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">low_eqbound =</span> <span class="sc">-</span>.<span class="dv">5</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">high_eqbound =</span> .<span class="dv">5</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">R =</span> <span class="dv">999</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(test1)</span></code></pre></div>
+<pre><code>## 
+## Bootstrapped Paired t-test
+## Hypothesis Tested: Equivalence
+## Equivalence Bounds (raw):-0.500 &amp; 0.500
+## Alpha Level:0.05
+## The equivalence test was non-significant, t(9) = -2.777, p = 1e+00
+## The null hypothesis test was significant, t(9) = -4.062, p = 0e+00
+## NHST: reject null significance hypothesis that the effect is equal to zero 
+## TOST: don&#39;t reject null equivalence hypothesis
+## 
+## TOST Results 
+##                    t        SE df p.value
+## t-test     -4.062128 0.3889587  9       0
+## TOST Lower -2.776644 0.3889587  9       1
+## TOST Upper -5.347611 0.3889587  9       0
+## 
+## Effect Sizes 
+##               estimate        SE  lower.ci   upper.ci conf.level
+## Raw          -1.580000 0.3670739 -2.210000 -1.0200000        0.9
+## Hedges&#39; g(z) -1.230152 0.7824360 -2.952717 -0.9169716        0.9
+## 
+## Note: percentile boostrap method utilized.</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(test1)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-efron93" class="csl-entry">
+Efron, Bradley, and Robert J. Tibshirani. 1993. <em>An Introduction to the Bootstrap</em>. Monographs on Statistics and Applied Probability 57. Boca Raton, Florida, USA: Chapman &amp; Hall/CRC.
+</div>
+<div id="ref-Kerby_2014" class="csl-entry">
+Kerby, Dave S. 2014. <span>“The Simple Difference Formula: An Approach to Teaching Nonparametric Correlation.”</span> <em>Comprehensive Psychology</em> 3 (January): 11.IT.3.1. <a href="https://doi.org/10.2466/11.it.3.1">https://doi.org/10.2466/11.it.3.1</a>.
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
