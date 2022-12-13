@@ -16,6 +16,15 @@ test_that("Run examples for one sample", {
   samp1 = rnorm(33)
 
   expect_error(boot_t_TOST())
+  expect_error(boot_t_TOST(x = samp1,
+                           eqb = "test",
+                           R = 99))
+  expect_error(boot_t_TOST(x = samp1,
+                           low_eqbound = -.5,
+                           high_eqbound = .5,
+                           alpha = 1.22,
+                           R = 99))
+  expect_error(boot_t_TOST(Sepal.Width ~ Species, data = iris))
 
   # Normal one sample ----
 
@@ -23,6 +32,13 @@ test_that("Run examples for one sample", {
                  low_eqbound = -.5,
                  high_eqbound = .5,
                  R = 99)
+  test1 = boot_t_TOST(x = samp1,
+                      eqb = .5,
+                      R = 99)
+
+  expect_error( boot_log_TOST(x = samp1,
+                      eqb = .5,
+                      R = 99))
 
   test3 = boot_t_TOST(x = samp1,
                  low_eqbound = -.5,
@@ -134,6 +150,14 @@ test_that("Run examples for two sample", {
                  high_eqbound = .5,
                  bias_correction = FALSE,
                  R = 199)
+
+  test1 = boot_t_TOST(x = samp1,
+                      y = samp2,
+                      var.equal = TRUE,
+                      eqb = .5,
+                      bias_correction = FALSE,
+                      R = 199)
+
 
   test3 = boot_t_TOST(x = samp1,
                  y = samp2,

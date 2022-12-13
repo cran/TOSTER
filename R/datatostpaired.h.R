@@ -169,7 +169,7 @@ dataTOSTpairedResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Cl
                 options=options,
                 name="",
                 title="TOST Paired Samples T-Test")
-            self$add(jmvcore::Preformatted$new(
+            self$add(jmvcore::Html$new(
                 options=options,
                 name="text",
                 clearWith=list(
@@ -311,8 +311,8 @@ dataTOSTpairedResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Cl
                 title="Effect Size Plot",
                 visible="(plots)",
                 renderFun=".plot",
-                width=400,
-                height=400,
+                width=500,
+                height=500,
                 clearWith=list(
                     "alpha",
                     "low_eqbound",
@@ -376,7 +376,8 @@ dataTOSTpairedBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class
 
 #' TOST Paired Samples T-Test
 #'
-#' TOST Paired Samples T-Test
+#' TOST Paired Samples T-Test in jamovi. This function is not meant to be 
+#' utilized in R. See t_TOST function.
 #'
 #' @examples
 #' \dontrun{
@@ -412,7 +413,7 @@ dataTOSTpairedBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class
 #'   effect size is biased (d) or bias-corrected (g).
 #' @return A results object containing:
 #' \tabular{llllll}{
-#'   \code{results$text} \tab \tab \tab \tab \tab a preformatted \cr
+#'   \code{results$text} \tab \tab \tab \tab \tab a html \cr
 #'   \code{results$tost} \tab \tab \tab \tab \tab a table \cr
 #'   \code{results$eqb} \tab \tab \tab \tab \tab a table \cr
 #'   \code{results$effsize} \tab \tab \tab \tab \tab a table \cr

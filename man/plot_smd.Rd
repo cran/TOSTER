@@ -7,7 +7,9 @@
 plot_smd(
   d,
   df,
-  lambda,
+  lambda = NULL,
+  sigma = NULL,
+  smd_ci = c("goulet", "nct", "t", "z"),
   smd_label = "SMD",
   type = c("c", "cd"),
   levels = c(0.5, 0.9, 0.95, 0.999)
@@ -19,6 +21,10 @@ plot_smd(
 \item{df}{degrees of freedom for the standardized mean difference}
 
 \item{lambda}{The non-centrality parameter for the standardized mean difference}
+
+\item{sigma}{The standard error for the standardized mean difference}
+
+\item{smd_ci}{Method for calculating SMD confidence intervals. Methods include Goulet, noncentral t (nct), central t (t), and normal method (z).}
 
 \item{smd_label}{Label for the x-axis indicating the SMD measure}
 
@@ -38,3 +44,9 @@ The difficulty is that specific information must be past onto this function.
 The calculations for the standardized mean difference can be found in the vignettes of this package.
 These types of plots are discussed by Schweder T, Hjort NL. (2016, ISBN:9781316445051) and Rafi Z, Greenland S. (2020) <doi:10.1186/s12874-020-01105-9>.
 }
+\seealso{
+Other plotting functions: 
+\code{\link{plot_cor}()},
+\code{\link{plot_pes}()}
+}
+\concept{plotting functions}

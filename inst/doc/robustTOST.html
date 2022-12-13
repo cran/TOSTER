@@ -12,7 +12,7 @@
 
 <meta name="author" content="Aaron R. Caldwell" />
 
-<meta name="date" content="2022-09-20" />
+<meta name="date" content="2022-12-13" />
 
 <title>Robust TOST Procedures</title>
 
@@ -356,7 +356,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Robust TOST Procedures</h1>
 <h4 class="author">Aaron R. Caldwell</h4>
-<h4 class="date">2022-09-20</h4>
+<h4 class="date">2022-12-13</h4>
 
 
 <div id="TOC">
@@ -365,6 +365,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <ul>
 <li><a href="#rank-biserial-correlation" id="toc-rank-biserial-correlation">Rank-Biserial Correlation</a></li>
 <li><a href="#confidence-intervals" id="toc-confidence-intervals">Confidence Intervals</a></li>
+<li><a href="#conversion-to-other-effect-sizes" id="toc-conversion-to-other-effect-sizes">Conversion to other effect
+sizes</a></li>
 </ul></li>
 <li><a href="#boostrap-tost" id="toc-boostrap-tost">Boostrap TOST</a>
 <ul>
@@ -372,6 +374,14 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 Sample Algorithm</a></li>
 <li><a href="#example" id="toc-example">Example</a></li>
 </ul></li>
+<li><a href="#ratio-of-difference-log-transformed" id="toc-ratio-of-difference-log-transformed">Ratio of Difference (Log
+Transformed)</a>
+<ul>
+<li><a href="#log_tost" id="toc-log_tost">log_TOST</a></li>
+<li><a href="#boot_log_tost" id="toc-boot_log_tost">boot_log_TOST</a></li>
+</ul></li>
+<li><a href="#just-estimate-an-effect-size" id="toc-just-estimate-an-effect-size">Just Estimate an Effect
+Size</a></li>
 <li><a href="#references" id="toc-references">References</a></li>
 </ul>
 </div>
@@ -405,31 +415,28 @@ comparison of equivalence.</p>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>test1 <span class="ot">=</span> <span class="fu">wilcox_TOST</span>(<span class="at">formula =</span> extra <span class="sc">~</span> group,</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> sleep,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">paired =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">low_eqbound =</span> <span class="sc">-</span>.<span class="dv">5</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                      <span class="at">high_eqbound =</span> .<span class="dv">5</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">eqb =</span> .<span class="dv">5</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(test1)</span></code></pre></div>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(test1)</span></code></pre></div>
 <pre><code>## 
 ## Wilcoxon rank sum test with continuity correction
-## Hypothesis Tested: Equivalence
-## Equivalence Bounds (raw):-0.500 &amp; 0.500
-## Alpha Level:0.05
+## 
 ## The equivalence test was non-significant W = 20.000, p = 8.94e-01
 ## The null hypothesis test was non-significant W = 25.500, p = 6.93e-02
 ## NHST: don&#39;t reject null significance hypothesis that the effect is equal to zero 
 ## TOST: don&#39;t reject null equivalence hypothesis
 ## 
 ## TOST Results 
-##            statistic    p.value
-## NHST            25.5 0.06932758
-## TOST Lower      34.0 0.89385308
-## TOST Upper      20.0 0.01287404
+##            Test Statistic p.value
+## NHST                 25.5   0.069
+## TOST Lower           34.0   0.894
+## TOST Upper           20.0   0.013
 ## 
 ## Effect Sizes 
-##                            estimate   lower.ci    upper.ci conf.level
-## Median of Differences     -1.346388 -3.3999651 -0.09995341        0.9
-## rank-biserial correlation -0.490000 -0.7492521 -0.10053222        0.9</code></pre>
+##                           Estimate               C.I. Conf. Level
+## Median of Differences       -1.346       [-3.4, -0.1]         0.9
+## Rank-Biserial Correlation   -0.490 [-0.7493, -0.1005]         0.9</code></pre>
 <div id="rank-biserial-correlation" class="section level2">
 <h2>Rank-Biserial Correlation</h2>
 <p>The standardized effect size reported for the
@@ -439,23 +446,52 @@ interpretation of the common language effect size <span class="citation">(Kerby 
 normality and equal variances, the rank-biserial correlation calculates
 the number of favorable (positive) and unfavorable (negative) pairs
 based on their respective ranks.</p>
-<p>Overall, the correlation is calculated as the proportion of favorable
-pairs minus the unfavorable pairs.</p>
+<p>For the two sample case, the correlation is calculated as the
+proportion of favorable pairs minus the unfavorable pairs.</p>
 <p><span class="math display">\[
 r_{biserial} = f_{pairs} - u_{pairs}
+\]</span></p>
+<p>For the one sample or paired samples cases, the correlation is
+calculated with ties (values equal to zero) not being dropped. This
+provides a <em>conservative</em> estimate of the rank biserial
+correlation.</p>
+<p>It is calculated in the following steps wherein <span class="math inline">\(z\)</span> represents the values or difference
+between paired observations:</p>
+<ol style="list-style-type: decimal">
+<li>Calculate signed ranks:</li>
+</ol>
+<p><span class="math display">\[
+r_j = -1 \cdot sign(z_j) \cdot rank(|z_j|)
+\]</span> 2. Calculate the positive and negative sums: <span class="math display">\[
+    R_{+} = \sum_{1\le i \le n, \space z_i &gt; 0}r_j
+\]</span></p>
+<p><span class="math display">\[
+    R_{-} = \sum_{1\le i \le n, \space z_i &lt; 0}r_j
+\]</span> 3. Determine the smaller of the two rank sums:</p>
+<p><span class="math display">\[
+T = min(R_{+}, \space R_{-})
+\]</span></p>
+<p><span class="math display">\[
+S = \begin{cases} -4 &amp; R_{+} \ge R_{-} \\ 4 &amp; R_{+} &lt; R_{-}
+\end{cases}
+\]</span> 4. Calculate rank-biserial correlation:</p>
+<p><span class="math display">\[
+r_{biserial} = S \cdot | \frac{\frac{T - \frac{(R_{+} +
+R_{-})}{2}}{n}}{n + 1} |
 \]</span></p>
 </div>
 <div id="confidence-intervals" class="section level2">
 <h2>Confidence Intervals</h2>
 <p>The Fisher approximation is used to calculate the confidence
 intervals.</p>
-<p>For paired samples the standard error is calculated as the
-following:</p>
+<p>For paired samples, or one sample, the standard error is calculated
+as the following:</p>
 <p><span class="math display">\[
 SE_r = \sqrt{ \frac {(2 \cdot nd^3 + 3 \cdot nd^2 + nd) / 6} {(nd^2 +
 nd) / 2} }
 \]</span></p>
-<p>wherein, nd represents the total count not equal to zero.</p>
+<p>wherein, nd represents the total number of observations (or
+pairs).</p>
 <p>For independent samples, the standard error is calculated as the
 following:</p>
 <p><span class="math display">\[
@@ -471,19 +507,109 @@ transformed.</p>
 <p><span class="math display">\[
 r_{CI} = tanh(r_z  \pm  Z_{(1 - \alpha / 2)} \cdot SE_r)
 \]</span></p>
-<p>We hope a bootstrapped version of this confidence interval will be
-added in future updates.</p>
+</div>
+<div id="conversion-to-other-effect-sizes" class="section level2">
+<h2>Conversion to other effect sizes</h2>
+<p>Two other effect sizes can be calculated for non-parametric tests.
+First, there is the concordance probability, which is also known at the
+c-statistic, c-index, or probability of superiority<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. The c-statistic is
+converted from the correlation using the following formula:</p>
+<p><span class="math display">\[
+c = \frac{(r_{biserial} + 1)}{2}
+\]</span></p>
+<p>The Wilcoxon-Mann-Whitney odds <span class="citation">(O’Brien and
+Castelloe 2006)</span>, also known as the “Generalized Odds Ratio” <span class="citation">(Agresti 1980)</span>, is calculated by converting the
+c-statistic using the following formula:</p>
+<p><span class="math display">\[
+WMW_{odds} = e^{logit(c)}
+\]</span></p>
+<p>Either effect size is available by simply modifying the
+<code>ses</code> argument for the <code>wilcox_TOST</code> function.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rank biserial</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox_TOST</span>(<span class="at">formula =</span> extra <span class="sc">~</span> group,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> sleep,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">paired =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">ses =</span> <span class="st">&quot;r&quot;</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">eqb =</span> .<span class="dv">5</span>)</span></code></pre></div>
+<pre><code>## 
+## Wilcoxon rank sum test with continuity correction
+## 
+## The equivalence test was non-significant W = 20.000, p = 8.94e-01
+## The null hypothesis test was non-significant W = 25.500, p = 6.93e-02
+## NHST: don&#39;t reject null significance hypothesis that the effect is equal to zero 
+## TOST: don&#39;t reject null equivalence hypothesis
+## 
+## TOST Results 
+##            Test Statistic p.value
+## NHST                 25.5   0.069
+## TOST Lower           34.0   0.894
+## TOST Upper           20.0   0.013
+## 
+## Effect Sizes 
+##                           Estimate               C.I. Conf. Level
+## Median of Differences       -1.346       [-3.4, -0.1]         0.9
+## Rank-Biserial Correlation   -0.490 [-0.7493, -0.1005]         0.9</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Odds</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox_TOST</span>(<span class="at">formula =</span> extra <span class="sc">~</span> group,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> sleep,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">paired =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">ses =</span> <span class="st">&quot;o&quot;</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">eqb =</span> .<span class="dv">5</span>)</span></code></pre></div>
+<pre><code>## 
+## Wilcoxon rank sum test with continuity correction
+## 
+## The equivalence test was non-significant W = 20.000, p = 8.94e-01
+## The null hypothesis test was non-significant W = 25.500, p = 6.93e-02
+## NHST: don&#39;t reject null significance hypothesis that the effect is equal to zero 
+## TOST: don&#39;t reject null equivalence hypothesis
+## 
+## TOST Results 
+##            Test Statistic p.value
+## NHST                 25.5   0.069
+## TOST Lower           34.0   0.894
+## TOST Upper           20.0   0.013
+## 
+## Effect Sizes 
+##                       Estimate             C.I. Conf. Level
+## Median of Differences  -1.3464     [-3.4, -0.1]         0.9
+## WMW Odds                0.3423 [0.1433, 0.8173]         0.9</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Concordance</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox_TOST</span>(<span class="at">formula =</span> extra <span class="sc">~</span> group,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> sleep,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">paired =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">ses =</span> <span class="st">&quot;c&quot;</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">eqb =</span> .<span class="dv">5</span>)</span></code></pre></div>
+<pre><code>## 
+## Wilcoxon rank sum test with continuity correction
+## 
+## The equivalence test was non-significant W = 20.000, p = 8.94e-01
+## The null hypothesis test was non-significant W = 25.500, p = 6.93e-02
+## NHST: don&#39;t reject null significance hypothesis that the effect is equal to zero 
+## TOST: don&#39;t reject null equivalence hypothesis
+## 
+## TOST Results 
+##            Test Statistic p.value
+## NHST                 25.5   0.069
+## TOST Lower           34.0   0.894
+## TOST Upper           20.0   0.013
+## 
+## Effect Sizes 
+##                       Estimate             C.I. Conf. Level
+## Median of Differences   -1.346     [-3.4, -0.1]         0.9
+## Concordance              0.255 [0.1254, 0.4497]         0.9</code></pre>
 </div>
 </div>
 <div id="boostrap-tost" class="section level1">
 <h1>Boostrap TOST</h1>
-<p>The boostrap is a simulation based technique, derived from resampling
-with replacement, designed for statistical estimation and inference.
-Bootsrapping techniques are very useful because they are considered
-somewhat robust to the violations of assumptions for a simple t-test.
-Therefore we added a bootsrap option, <code>boot_t_TOST</code> to the
-package to provide another robust alternative to the <code>t_TOST</code>
-function.</p>
+<p>The bootstrap is a simulation based technique, derived from
+re-sampling with replacement, designed for statistical estimation and
+inference. Bootstrapping techniques are very useful because they are
+considered somewhat robust to the violations of assumptions for a simple
+t-test. Therefore we added a bootstrap option, <code>boot_t_TOST</code>
+to the package to provide another robust alternative to the
+<code>t_TOST</code> function.</p>
 <p>In this function we provide a percentile bootstrap solution outlined
 by <span class="citation">Efron and Tibshirani (1993)</span> (see
 chapter 16, page 220). The bootstrapped p-values are derived from the
@@ -521,59 +647,184 @@ test is based on the difference scores.</p>
 <div id="example" class="section level2">
 <h2>Example</h2>
 <p>Again, we can use the sleep data to see the bootstrapped results.
-Notice that the plots show how the resampling via boostrapping indicates
-the instability of Hedges’ d(z).</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&#39;sleep&#39;</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>test1 <span class="ot">=</span> <span class="fu">boot_t_TOST</span>(<span class="at">formula =</span> extra <span class="sc">~</span> group,</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> sleep,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">paired =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">low_eqbound =</span> <span class="sc">-</span>.<span class="dv">5</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">high_eqbound =</span> .<span class="dv">5</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">R =</span> <span class="dv">999</span>)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(test1)</span></code></pre></div>
+Notice that the plots show how the re-sampling via bootstrapping
+indicates the instability of Hedges’ d(z).</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&#39;sleep&#39;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>test1 <span class="ot">=</span> <span class="fu">boot_t_TOST</span>(<span class="at">formula =</span> extra <span class="sc">~</span> group,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> sleep,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                      <span class="at">paired =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">eqb =</span> .<span class="dv">5</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">R =</span> <span class="dv">999</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(test1)</span></code></pre></div>
 <pre><code>## 
 ## Bootstrapped Paired t-test
-## Hypothesis Tested: Equivalence
-## Equivalence Bounds (raw):-0.500 &amp; 0.500
-## Alpha Level:0.05
+## 
 ## The equivalence test was non-significant, t(9) = -2.777, p = 1e+00
 ## The null hypothesis test was significant, t(9) = -4.062, p = 0e+00
 ## NHST: reject null significance hypothesis that the effect is equal to zero 
 ## TOST: don&#39;t reject null equivalence hypothesis
 ## 
 ## TOST Results 
-##                    t        SE df p.value
-## t-test     -4.062128 0.3889587  9       0
-## TOST Lower -2.776644 0.3889587  9       1
-## TOST Upper -5.347611 0.3889587  9       0
+##                 t df p.value
+## t-test     -4.062  9 &lt; 0.001
+## TOST Lower -2.777  9       1
+## TOST Upper -5.348  9 &lt; 0.001
 ## 
 ## Effect Sizes 
-##               estimate        SE  lower.ci   upper.ci conf.level
-## Raw          -1.580000 0.3709668 -2.210000 -1.0300000        0.9
-## Hedges&#39; g(z) -1.230152 0.7414507 -2.818478 -0.9184013        0.9
-## 
-## Note: percentile boostrap method utilized.</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(test1)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+##               Estimate     SE               C.I. Conf. Level
+## Raw             -1.580 0.3885   [-2.321, -1.059]         0.9
+## Hedges&#39;s g(z)   -1.174 0.6698 [-2.7323, -0.9414]         0.9
+## Note: percentile bootstrap method utilized.</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(test1)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
+</div>
+<div id="ratio-of-difference-log-transformed" class="section level1">
+<h1>Ratio of Difference (Log Transformed)</h1>
+<p>In many bioequivalence studies, the differences between drugs are
+compared on the log scale <span class="citation">(He et al.
+2022)</span>. The log scale allows researchers to compare the ratio of
+two means.</p>
+<p><span class="math display">\[
+log ( \frac{y}{x} ) = log(y) - log(x)
+\]</span> The <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/bioavailability-and-bioequivalence-studies-submitted-ndas-or-inds-general-considerations">United
+States Food and Drug Administration (FDA)</a><a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> hs stated a rationale
+for using the log transformed values:</p>
+<blockquote>
+<p>Using logarithmic transformation, the general linear statistical
+model employed in the analysis of BE data allows inferences about the
+difference between the two means on the log scale, which can then be
+retransformed into inferences about the ratio of the two averages (means
+or medians) on the original scale. Logarithmic transformation thus
+achieves a general comparison based on the ratio rather than the
+differences.</p>
+</blockquote>
+<p>In addition, the FDA, considers two drugs as bioequivalent when the
+ratio between x and y is less than 1.25 and greater than 0.8 (1/1.25),
+which is the default equivalence bound for the log functions.</p>
+<div id="log_tost" class="section level2">
+<h2>log_TOST</h2>
+<p>For example, we could compare whether the cars of different
+transmissions are “equivalent” with regards to gas mileage. We can use
+the default equivalence bounds (<code>eqb = 1.25</code>).</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log_TOST</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  mpg <span class="sc">~</span> am,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> mtcars</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## 
+## Log-transformed Welch Two Sample t-test
+## 
+## The equivalence test was non-significant, t(23.96) = -1.363, p = 9.07e-01
+## The null hypothesis test was significant, t(23.96) = -3.826, p = 8.19e-04
+## NHST: reject null significance hypothesis that the effect is equal to one 
+## TOST: don&#39;t reject null equivalence hypothesis
+## 
+## TOST Results 
+##                 t    df p.value
+## t-test     -3.826 23.96 &lt; 0.001
+## TOST Lower -1.363 23.96   0.907
+## TOST Upper -6.288 23.96 &lt; 0.001
+## 
+## Effect Sizes 
+##                  Estimate      SE               C.I. Conf. Level
+## log(Means Ratio)  -0.3466 0.09061 [-0.5017, -0.1916]         0.9
+## Means Ratio        0.7071      NA   [0.6055, 0.8256]         0.9</code></pre>
+<p>Note, that the function produces t-tests similar to the
+<code>t_TOST</code> function, but provides two effect sizes. The means
+ratio on the log scale (the scale of the test statistics), and the means
+ratio. The means ratio is missing standard error because the confidence
+intervals and estimate are simply the log scale results
+exponentiated.</p>
+</div>
+<div id="boot_log_tost" class="section level2">
+<h2>boot_log_TOST</h2>
+<p>However, it has been noted in the statistics literature that t-tests
+on the logarithmic scale can be biased, and it is recommended that
+bootstrapped tests be utilized instead. Therefore, the
+<code>boot_log_TOST</code> function can be utilized to perform a more
+precise test.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boot_log_TOST</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  mpg <span class="sc">~</span> am,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> mtcars,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">R =</span> <span class="dv">499</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## 
+## Bootstrapped Log Welch Two Sample t-test
+## 
+## The equivalence test was non-significant, t(23.96) = -1.363, p = 9.58e-01
+## The null hypothesis test was significant, t(23.96) = -3.826, p = 0e+00
+## NHST: reject null significance hypothesis that the effect is equal to 1 
+## TOST: don&#39;t reject null equivalence hypothesis
+## 
+## TOST Results 
+##                 t    df p.value
+## t-test     -3.826 23.96 &lt; 0.001
+## TOST Lower -1.363 23.96   0.958
+## TOST Upper -6.288 23.96 &lt; 0.001
+## 
+## Effect Sizes 
+##                  Estimate      SE               C.I. Conf. Level
+## log(Means Ratio)  -0.3466 0.08823 [-0.4877, -0.1958]         0.9
+## Means Ratio        0.7071 0.06298    [0.614, 0.8222]         0.9
+## Note: percentile bootstrap method utilized.</code></pre>
+</div>
+</div>
+<div id="just-estimate-an-effect-size" class="section level1">
+<h1>Just Estimate an Effect Size</h1>
+<p>It was requested that a function be provided that only calculates and
+effect size. Therefore, I created the <code>ses_calc</code> function as
+robust effect size calculation. The interface is almost the same as
+<code>wilcox_TOST</code> but you don’t set an equivalence bound.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ses_calc</span>(<span class="at">formula =</span> extra <span class="sc">~</span> group,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">data =</span> sleep,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">paired =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">ses =</span> <span class="st">&quot;r&quot;</span>)</span></code></pre></div>
+<pre><code>##                            estimate lower.ci  upper.ci conf.level
+## Rank-Biserial Correlation 0.9818182 0.928369 0.9954785       0.95</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-agresti" class="csl-entry">
+Agresti, Alan. 1980. <span>“Generalized Odds Ratios for Ordinal
+Data.”</span> <em>Biometrics</em>, 59–67. <a href="https://doi.org/10.2307/2530495">https://doi.org/10.2307/2530495</a>.
+</div>
 <div id="ref-efron93" class="csl-entry">
 Efron, Bradley, and Robert J. Tibshirani. 1993. <em>An Introduction to
 the Bootstrap</em>. Monographs on Statistics and Applied Probability 57.
 Boca Raton, Florida, USA: Chapman &amp; Hall/CRC.
+</div>
+<div id="ref-he2022" class="csl-entry">
+He, Y, Y Deng, C You, and X H Zhou. 2022. <span>“Equivalence Tests for
+Ratio of Means in Bioequivalence Studies Under Crossover
+Designs.”</span> <em>Statistical Methods in Medical Research</em>,
+09622802221093721. <a href="https://doi.org/10.1177/09622802221093721">https://doi.org/10.1177/09622802221093721</a>.
 </div>
 <div id="ref-Kerby_2014" class="csl-entry">
 Kerby, Dave S. 2014. <span>“The Simple Difference Formula: An Approach
 to Teaching Nonparametric Correlation.”</span> <em>Comprehensive
 Psychology</em> 3 (January): 11.IT.3.1. <a href="https://doi.org/10.2466/11.it.3.1">https://doi.org/10.2466/11.it.3.1</a>.
 </div>
+<div id="ref-wmwodds" class="csl-entry">
+O’Brien, Ralph G, and John Castelloe. 2006. <span>“Exploiting the Link
+Between the Wilcoxon-Mann-Whitney Test and a Simple Odds
+Statistic,”</span> 209–31.
 </div>
+</div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>Directly inspired by this blog post from Professor Frank
+Harrell <a href="https://hbiostat.org/blog/post/wpo/" class="uri">https://hbiostat.org/blog/post/wpo/</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>Food and Drug Administration (2014). Bioavailability and
+Bioequivalence Studies Submitted in NDAs or INDs — General
+Considerations.Center for Drug Evaluation and Research. Docket:
+FDA-2014-D-0204<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+</ol>
 </div>
 
 

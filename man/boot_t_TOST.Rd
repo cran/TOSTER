@@ -14,6 +14,7 @@ boot_t_TOST(x, ...)
   hypothesis = "EQU",
   paired = FALSE,
   var.equal = FALSE,
+  eqb,
   low_eqbound,
   high_eqbound,
   eqbound_type = "raw",
@@ -39,9 +40,11 @@ boot_t_TOST(x, ...)
 
 \item{var.equal}{a logical variable indicating whether to treat the two variances as being equal. If TRUE then the pooled variance is used to estimate the variance otherwise the Welch (or Satterthwaite) approximation to the degrees of freedom is used.}
 
-\item{low_eqbound}{lower equivalence bounds}
+\item{eqb}{Equivalence bound. Can provide 1 value (negative value is taken as the lower bound) or 2 specific values that represent the upper and lower equivalence bounds.}
 
-\item{high_eqbound}{upper equivalence bounds}
+\item{low_eqbound}{lower equivalence bounds (deprecated).}
+
+\item{high_eqbound}{upper equivalence bounds (deprecated).}
 
 \item{eqbound_type}{Type of equivalence bound. Can be set to "SMD" for standardized mean difference (i.e., Cohen's d) or  "raw" for the mean difference. Default is "raw". Raw is strongly recommended as SMD bounds will produce biased results.}
 
@@ -77,10 +80,16 @@ An S3 object of class
 }
 }
 \description{
-A function for a bootstrap method for TOST with all types of t-tests.
+A function for a bootstrap method for TOST with all types of t-tests..
 }
 \details{
-The implemented test(s) corresponds to the proposal of Chapter 16 of Efron and Tibshirani (1993). Returns TOSTt class object with boostrapped based results. Please note that the repeated measures "corrected" effect size is not available at this time.
+For details on the calculations in this function see vignette("robustTOST").
+
+The implemented test(s) corresponds to the proposal of Chapter 16 of Efron and Tibshirani (1994).
+ Returns TOSTt class object with bootstrapped based results.
+ Please note that the repeated measures "corrected" effect size is not available at this time.
+
+For details on the calculations in this function see vignette("robustTOST").
 }
 \section{References}{
 
@@ -88,3 +97,10 @@ The implemented test(s) corresponds to the proposal of Chapter 16 of Efron and T
 Efron, B., & Tibshirani, R. J. (1994). An introduction to the bootstrap. CRC press.
 }
 
+\seealso{
+Other Robust TOST: 
+\code{\link{boot_log_TOST}()},
+\code{\link{log_TOST}()},
+\code{\link{wilcox_TOST}()}
+}
+\concept{Robust TOST}

@@ -12,27 +12,33 @@ t_TOST(
   hypothesis = "EQU",
   paired = FALSE,
   var.equal = FALSE,
+  eqb,
   low_eqbound,
   high_eqbound,
   eqbound_type = "raw",
   alpha = 0.05,
   bias_correction = TRUE,
-  rm_correction = FALSE
+  rm_correction = FALSE,
+  glass = NULL,
+  smd_ci = c("nct", "goulet", "t", "z")
 )
 
 \method{t_TOST}{default}(
   x,
   y = NULL,
-  hypothesis = "EQU",
+  hypothesis = c("EQU", "MET"),
   paired = FALSE,
   var.equal = FALSE,
+  eqb,
   low_eqbound,
   high_eqbound,
-  eqbound_type = "raw",
+  eqbound_type = c("raw", "SMD"),
   alpha = 0.05,
   mu = 0,
   bias_correction = TRUE,
   rm_correction = FALSE,
+  glass = NULL,
+  smd_ci = c("nct", "goulet", "t", "z"),
   ...
 )
 
@@ -49,9 +55,11 @@ t_TOST(
 
 \item{var.equal}{a logical variable indicating whether to treat the two variances as being equal. If TRUE then the pooled variance is used to estimate the variance otherwise the Welch (or Satterthwaite) approximation to the degrees of freedom is used.}
 
-\item{low_eqbound}{lower equivalence bounds}
+\item{eqb}{Equivalence bound. Can provide 1 value (negative value is taken as the lower bound) or 2 specific values that represent the upper and lower equivalence bounds.}
 
-\item{high_eqbound}{upper equivalence bounds}
+\item{low_eqbound}{lower equivalence bounds (deprecated).}
+
+\item{high_eqbound}{upper equivalence bounds (deprecated).}
 
 \item{eqbound_type}{Type of equivalence bound. Can be set to "SMD" for standardized mean difference (i.e., Cohen's d) or  "raw" for the mean difference. Default is "raw". Raw is strongly recommended as SMD bounds will produce biased results.}
 
@@ -60,6 +68,10 @@ t_TOST(
 \item{bias_correction}{Apply Hedges' correction for bias (default is TRUE).}
 
 \item{rm_correction}{Repeated measures correction to make standardized mean difference Cohen's d(rm). This only applies to repeated/paired samples. Default is FALSE.}
+
+\item{glass}{A option to calculate Glass's delta as an alternative to Cohen's d type SMD. Default is NULL to not calculate Glass's delta, "glass1" will use the first group's SD as the denominator whereas "glass2" will use the 2nd group's SD.}
+
+\item{smd_ci}{Method for calculating SMD confidence intervals. Methods include Goulet, noncentral t (nct), central t (t), and normal method (z).}
 
 \item{y}{an optional (non-empty) numeric vector of data values.}
 
@@ -90,3 +102,18 @@ An S3 object of class
 \description{
 A function for TOST with all types of t-tests.
 }
+\details{
+For details on the calculations in this function see vignette("IntroTOSTt") & vignette("SMD_calcs").
+}
+\examples{
+data(mtcars)
+t_TOST(mpg ~ am,
+data = mtcars,
+eqb = 3)
+}
+\seealso{
+Other TOST: 
+\code{\link{extract_r_paired}()},
+\code{\link{tsum_TOST}()}
+}
+\concept{TOST}

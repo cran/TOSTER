@@ -24,16 +24,34 @@ test_that("Run examples for one sample", {
   samp1 = rnorm(33)
 
   expect_error(t_TOST())
-
+  expect_error(t_TOST(x = samp1,
+                             eqb = c(-1,1,.5)))
+  expect_error(t_TOST(x = samp1,
+                     low_eqbound = -.5,
+                     high_eqbound = .5,
+                     alpha = 1.22))
+  expect_error(t_TOST(Sepal.Width ~ Species, data = iris))
   # Normal one sample ----
 
   test1 = t_TOST(x = samp1,
                  low_eqbound = -.5,
                  high_eqbound = .5)
+  test1_smd = smd_calc(x = samp1,
+                       alpha = .1)
+  expect_equal(test1_smd$estimate, test1$effsize$estimate[2])
+  expect_equal(test1_smd$lower.ci, test1$effsize$lower.ci[2])
+  expect_equal(test1_smd$upper.ci, test1$effsize$upper.ci[2])
+  expect_equal(test1_smd$SE, test1$effsize$SE[2])
+
+  test1 = t_TOST(x = samp1,
+                 eqb = .5)
+
+  test1 = t_TOST(x = samp1,
+                 eqb = c(-.5,.5))
 
   test2 = suppressMessages(t_TOST(x = samp1,
-                                low_eqbound = -.5,
-                                high_eqbound = .5,
+                                #low_eqbound = -.5,
+                                eqb = .5,
                                 eqbound_type = "SMD"))
 
   test3 = t_TOST(x = samp1,
@@ -42,8 +60,8 @@ test_that("Run examples for one sample", {
                  hypothesis = "MET")
 
   test4 = suppressMessages( { t_TOST(x = samp1,
-                                   low_eqbound = -.5,
-                                   high_eqbound = .5,
+                                   #low_eqbound = -.5,
+                                   eqb = .5,
                                    eqbound_type = "SMD",
                                    hypothesis = "MET")})
 
@@ -66,7 +84,35 @@ test_that("Run examples for one sample", {
                     n1 = length(samp1),
                     low_eqbound = -.5,
                     high_eqbound = .5)
-
+  tsum1 = tsum_TOST(m1 = mean(samp1),
+                    sd1 = sd(samp1),
+                    n1 = length(samp1),
+                    eqb = .5)
+  tsum1_tg = tsum_TOST(m1 = mean(samp1),
+                    sd1 = sd(samp1),
+                    n1 = length(samp1),
+                    eqb = .5,
+                    glass = "glass1")
+  tsum1_tg = tsum_TOST(m1 = mean(samp1),
+                       sd1 = sd(samp1),
+                       n1 = length(samp1),
+                       eqb = .5,
+                       glass = "glass2")
+  expect_error(tsum_TOST(m1 = mean(samp1),
+                         sd1 = sd(samp1),
+                         n1 = length(samp1),
+                         eqb = c(.5,-.5,1)))
+  expect_error(tsum_TOST(m1 = mean(samp1),
+                         sd1 = sd(samp1),
+                         n1 = length(samp1),
+                         m12 = mean(samp1),
+                         sd12 = sd(samp1),
+                         n12 = length(samp1),
+                         eqb = c(.5,-.5),
+                         paired = TRUE))
+  expect_error(tsum_TOST(m1 = mean(samp1),
+                    sd1 = sd(samp1),
+                    n1 = length(samp1)))
   tsum2 = suppressMessages({ tsum_TOST(m1 = mean(samp1),
                                      sd1 = sd(samp1),
                                      n1 = length(samp1),
@@ -130,7 +176,8 @@ test_that("Run examples for one sample", {
                                    high_eqbound = .5,
                                    eqbound_type = "SMD",
                                    hypothesis = "MET",
-                                   bias_correction = FALSE)
+                                   bias_correction = FALSE,
+                                   smd_ci = "goulet")
   })
 
   expect_equal(1-test1$TOST$p.value[2],
@@ -226,6 +273,19 @@ test_that("Run examples for two sample", {
                  y = samp2,
                  low_eqbound = -.5,
                  high_eqbound = .5)
+
+  test1_smd = smd_calc(x = samp1,
+                              y = samp2,
+                       alpha = .1)
+
+  expect_error(smd_calc(x = samp1,
+                        y = samp2,
+                        alpha = -.1))
+
+  expect_equal(test1_smd$estimate, test1$effsize$estimate[2])
+  expect_equal(test1_smd$lower.ci, test1$effsize$lower.ci[2])
+  expect_equal(test1_smd$upper.ci, test1$effsize$upper.ci[2])
+  expect_equal(test1_smd$SE, test1$effsize$SE[2])
 
   test2 = suppressMessages( t_TOST(x = samp1,
                                  y = samp2,
@@ -439,7 +499,12 @@ test_that("Run examples for two sample", {
                  low_eqbound = -.5,
                  high_eqbound = .5,
                  bias_correction = FALSE)
-
+  test1_smd = smd_calc(formula = y ~ group,
+                       data = df_samp,
+                       var.equal = TRUE,
+                       bias_correction = FALSE)
+  # test htest
+  ash = as_htest(test1)
   test2 = suppressMessages( t_TOST(formula = y ~ group,
                                  data = df_samp,
                                  var.equal = TRUE,
@@ -447,7 +512,7 @@ test_that("Run examples for two sample", {
                                  high_eqbound = .5,
                                  eqbound_type = "SMD",
                                  bias_correction = FALSE) )
-
+  ash = as_htest(test2)
   test3 = t_TOST(formula = y ~ group,
                  data = df_samp,
                  var.equal = TRUE,
@@ -463,7 +528,8 @@ test_that("Run examples for two sample", {
                                  high_eqbound = .5,
                                  eqbound_type = "SMD",
                                  hypothesis = "MET",
-                                 bias_correction = FALSE) )
+                                 bias_correction = FALSE,
+                                 smd_ci = "g") )
 
   expect_equal(1-test1$TOST$p.value[2],
                test3$TOST$p.value[2])
@@ -520,14 +586,22 @@ test_that("Run examples for paired samples", {
                  paired = TRUE,
                  low_eqbound = -.5,
                  high_eqbound = .5)
-
+  test1_smd = smd_calc(x = samp1,
+                 y = samp2,
+                 paired = TRUE,
+                 alpha = .1)
+  expect_equal(test1_smd$estimate, test1$effsize$estimate[2])
+  expect_equal(test1_smd$lower.ci, test1$effsize$lower.ci[2])
+  expect_equal(test1_smd$upper.ci, test1$effsize$upper.ci[2])
+  expect_equal(test1_smd$SE, test1$effsize$SE[2])
+  ash = as_htest(test1)
   test2 = suppressMessages(  t_TOST(x = samp1,
                                   y = samp2,
                                   paired = TRUE,
                                   low_eqbound = -.5,
                                   high_eqbound = .5,
                                   eqbound_type = "SMD") )
-
+  ash = as_htest(test2)
   test3 = t_TOST(x = samp1,
                  y = samp2,
                  paired = TRUE,
@@ -594,6 +668,26 @@ test_that("Run examples for paired samples", {
                     hypothesis = "MET",
                     bias_correction = FALSE)
 
+  expect_equal(cor12,
+               extract_r_paired(m1 = mean(samp1),
+                                sd1 = sd(samp1),
+                                m2 = mean(samp2),
+                                sd2 = sd(samp2),
+                                n = length(samp2),
+                                tstat = tsum3$TOST$t[1]))
+  expect_error(extract_r_paired(m1 = mean(samp1),
+                                sd1 = sd(samp1),
+                                m2 = mean(samp2),
+                                sd2 = sd(samp2),
+                                n = length(samp2),
+                                tstat = NULL))
+
+  something = extract_r_paired(m1 = mean(samp1),
+                               sd1 = sd(samp1),
+                               m2 = mean(samp2),
+                               #sd2 = sd(samp2),
+                               n = length(samp2),
+                               tstat = tsum3$TOST$t[1])
   tsum4 = suppressMessages( { tsum_TOST(m1 = mean(samp1),
                                       sd1 = sd(samp1),
                                       n1 = length(samp1),
@@ -880,7 +974,8 @@ test_that("plot generic function",{
                  y = samp2,
                  paired = TRUE,
                  low_eqbound = -.5,
-                 high_eqbound = .5)
+                 high_eqbound = .5,
+                 smd_ci = "g")
 
   expect_error(plot(wilcox_TOST(x = samp1,
                                 y = samp2,
@@ -999,5 +1094,258 @@ test_that("Ensure paired output correct", {
                  rm_correction = T)
   expect_equal(sign(test4$effsize$estimate[1]),sign(test4$effsize$estimate[2]))
 
+
+})
+
+test_that("Check NCT CIs for paired",{
+  #effectsize::hedges_g(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,paired = TRUE, ci = .9)
+  test1 = t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+               paired = TRUE,
+               eqb = .5,
+               smd_ci = "nct",
+               bias_correction = T,
+               glass = NULL)
+  expect_equal(test1$effsize$estimate[2],
+               -1.174, tolerance = .001)
+  expect_equal(test1$effsize$lower.ci[2],
+               -1.805, tolerance = .001)
+  expect_equal(test1$effsize$upper.ci[2],
+               -0.4977, tolerance = .001)
+  #effectsize::cohens_d(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,paired = TRUE, ci = .9)
+
+  test2= t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+               paired = TRUE,
+               eqb = .5,
+               smd_ci = "n",
+               bias_correction = F,
+               glass = NULL)
+  test_plot = plot(test2)
+  expect_equal(test2$effsize$estimate[2],
+               -1.285, tolerance = .001)
+  expect_equal(test2$effsize$lower.ci[2],
+               -1.975, tolerance = .001)
+  expect_equal(test2$effsize$upper.ci[2],
+               -0.545, tolerance = .001)
+
+  test3 = t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                paired = TRUE,
+                eqb = .5,
+                smd_ci = "t",
+                bias_correction = F,
+                glass = NULL)
+  p3 = plot(test3)
+  test4 = t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                 paired = TRUE,
+                 eqb = .5,
+                 smd_ci = "z",
+                 bias_correction = F,
+                 glass = NULL)
+  p4 = plot(test4)
+  test5 = t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                 paired = TRUE,
+                 eqb = .5,
+                 smd_ci = "g",
+                 bias_correction = F,
+                 glass = "glass1")
+  test5_smd = smd_calc(x=subset(sleep, group ==1)$extra,
+                   y=subset(sleep, group ==2)$extra,
+                 paired = TRUE,
+                 smd_ci = "g",
+                 bias_correction = F,
+                 glass = "glass1",
+                 alpha = .1)
+  test5_smd = smd_calc(x=subset(sleep, group ==1)$extra,
+                       y=subset(sleep, group ==2)$extra,
+                       paired = TRUE,
+                       smd_ci = "g",
+                       bias_correction = F,
+                       glass = "glass2",
+                       alpha = .1)
+
+  test6 = t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                 paired = TRUE,
+                 eqb = .5,
+                 smd_ci = "z",
+                 rm_correction = TRUE,
+                 bias_correction = F)
+  test7 = t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                 paired = TRUE,
+                 eqb = .5,
+                 smd_ci = "n",
+                 rm_correction = TRUE,
+                 bias_correction = F)
+  test8 = t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                 paired = TRUE,
+                 eqb = .5,
+                 smd_ci = "t",
+                 rm_correction = TRUE,
+                 bias_correction = F)
+})
+
+test_that("Check NCT CIs for ind",{
+  #effectsize::hedges_g(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,paired = FALSE, ci = .9, pooled_sd =TRUE)
+  test1 = t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                 paired = FALSE,
+                 var.equal= TRUE,
+                 eqb = .5,
+                 smd_ci = "nct",
+                 bias_correction = TRUE)
+  expect_equal(test1$effsize$estimate[2],
+               -0.7969352, tolerance = .01)
+  expect_equal(test1$effsize$lower.ci[2],
+               -1.523594, tolerance = .001)
+  expect_equal(test1$effsize$upper.ci[2],
+               -0.04942503, tolerance = .001)
+  #effectsize::cohens_d(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,paired = FALSE, ci = .9)
+
+  test2= t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                paired = FALSE,
+                var.equal=TRUE,
+                eqb = .5,
+                smd_ci = "n",
+                bias_correction = FALSE,
+                glass = NULL)
+  test_plot = plot(test2)
+  expect_equal(test2$effsize$estimate[2],
+               -0.8321, tolerance = .001)
+  expect_equal(test2$effsize$lower.ci[2],
+               -1.5909, tolerance = .001)
+  expect_equal(test2$effsize$upper.ci[2],
+               -0.05161, tolerance = .001)
+
+  test3 = t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                 paired = FALSE,
+                 eqb = .5,
+                 smd_ci = "t",
+                 bias_correction = F,
+                 glass = NULL)
+  p3 = plot(test3)
+  test4 = t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                 paired = FALSE,
+                 eqb = .5,
+                 smd_ci = "z",
+                 bias_correction = F,
+                 glass = NULL)
+  p4 = plot(test4)
+  test5 = t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                 paired = FALSE,
+                 eqb = .5,
+                 smd_ci = "g",
+                 bias_correction = F,
+                 glass = "glass1")
+
+  test6 = t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                 paired = FALSE,
+                 eqb = .5,
+                 smd_ci = "z",
+                 rm_correction = TRUE,
+                 bias_correction = F)
+  test7 = t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                 paired = FALSE,
+                 eqb = .5,
+                 smd_ci = "n",
+                 rm_correction = TRUE,
+                 bias_correction = F)
+  test8 = t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                 paired = FALSE,
+                 eqb = .5,
+                 smd_ci = "t",
+                 rm_correction = TRUE,
+                 bias_correction = F)
+
+  ## Check avg
+
+  #t1=effectsize::hedges_g(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,paired = FALSE, ci = .9, pooled_sd =FALSE)
+  test1 = t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                 paired = FALSE,
+                 var.equal= TRUE,
+                 eqb = .5,
+                 smd_ci = "nct",
+                 bias_correction = TRUE)
+  expect_equal(test1$effsize$estimate[2],
+               -0.7969352, tolerance = .01)
+  expect_equal(test1$effsize$lower.ci[2],
+               -1.523594, tolerance = .001)
+  expect_equal(test1$effsize$upper.ci[2],
+               -0.04942503, tolerance = .001)
+  #t2=effectsize::cohens_d(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,paired = FALSE, ci = .9, pooled_sd = FALSE)
+
+  test2= t_TOST(x=subset(sleep, group ==1)$extra,y=subset(sleep, group ==2)$extra,
+                paired = FALSE,
+                var.equal=FALSE,
+                eqb = .5,
+                smd_ci = "n",
+                bias_correction = FALSE,
+                glass = NULL)
+  test_plot = plot(test2)
+  expect_equal(test2$effsize$estimate[2],
+               -0.83218, tolerance = .001)
+  expect_equal(test2$effsize$lower.ci[2],
+               -1.59126, tolerance = .001)
+  expect_equal(test2$effsize$upper.ci[2],
+               -0.051069, tolerance = .001)
+})
+
+test_that("Check NCT CIs for one",{
+  z1=subset(sleep, group ==1)$extra-subset(sleep, group ==2)$extra
+  #t1=effectsize::hedges_g(x=z1,paired = FALSE, ci = .9, pooled_sd =TRUE)
+
+  test1 = t_TOST(x=z1,
+                 eqb = .5,
+                 smd_ci = "nct",
+                 bias_correction = TRUE)
+  expect_equal(test1$effsize$estimate[2],
+               -1.173925, tolerance = .01)
+  expect_equal(test1$effsize$lower.ci[2],
+               -1.804551, tolerance = .001)
+  expect_equal(test1$effsize$upper.ci[2],
+               -0.4977325, tolerance = .001)
+  #t2 = effectsize::cohens_d(x=z1,paired = FALSE, ci = .9)
+
+  test2= t_TOST(x=z1,
+                eqb = .5,
+                smd_ci = "nct",
+                bias_correction = FALSE)
+  test_plot = plot(test2)
+  expect_equal(test2$effsize$estimate[2],
+               -1.284558, tolerance = .001)
+  expect_equal(test2$effsize$lower.ci[2],
+               -1.974615, tolerance = .001)
+  expect_equal(test2$effsize$upper.ci[2],
+               -0.5446397, tolerance = .001)
+
+  test3 = t_TOST(x=z1,
+                 eqb = .5,
+                 smd_ci = "t",
+                 bias_correction = F,
+                 glass = NULL)
+  p3 = plot(test3)
+  test4 = t_TOST(x=z1,
+                 eqb = .5,
+                 smd_ci = "z",
+                 bias_correction = F,
+                 glass = NULL)
+  p4 = plot(test4)
+  test5 = t_TOST(x=z1,
+                 eqb = .5,
+                 smd_ci = "g",
+                 bias_correction = F,
+                 glass = "glass1")
+
+  test6 = t_TOST(x=z1,
+                 eqb = .5,
+                 smd_ci = "z",
+                 rm_correction = TRUE,
+                 bias_correction = F)
+  test7 = t_TOST(x=z1,
+                 eqb = .5,
+                 smd_ci = "n",
+                 rm_correction = TRUE,
+                 bias_correction = F)
+  test8 = t_TOST(x=z1,
+                 eqb = .5,
+                 smd_ci = "t",
+                 rm_correction = TRUE,
+                 bias_correction = F)
 
 })

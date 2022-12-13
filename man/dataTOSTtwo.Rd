@@ -65,7 +65,7 @@ effect size is biased (d) or bias-corrected (g).}
 \value{
 A results object containing:
 \tabular{llllll}{
-  \code{results$text} \tab \tab \tab \tab \tab a preformatted \cr
+  \code{results$text} \tab \tab \tab \tab \tab a html \cr
   \code{results$tost} \tab \tab \tab \tab \tab a table \cr
   \code{results$eqb} \tab \tab \tab \tab \tab a table \cr
   \code{results$effsize} \tab \tab \tab \tab \tab a table \cr
@@ -81,7 +81,8 @@ Tables can be converted to data frames with \code{asDF} or \code{\link{as.data.f
 \code{as.data.frame(results$tost)}
 }
 \description{
-TOST Independent Samples T-Test
+TOST Independent Samples T-Test for jamovi. This function is not meant to 
+be utilized in R. See t_TOST function.
 }
 \section{References}{
 

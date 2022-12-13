@@ -6,17 +6,21 @@
 #' @param data an optional matrix or data frame (or similar: see model.frame) containing the variables in the formula formula. By default the variables are taken from environment(formula).
 #' @param paired a logical indicating whether you want a paired t-test.
 #' @param var.equal  a logical variable indicating whether to treat the two variances as being equal. If TRUE then the pooled variance is used to estimate the variance otherwise the Welch (or Satterthwaite) approximation to the degrees of freedom is used.
-#' @param low_eqbound lower equivalence bounds
-#' @param high_eqbound upper equivalence bounds
+#' @param eqb Equivalence bound. Can provide 1 value (negative value is taken as the lower bound) or 2 specific values that represent the upper and lower equivalence bounds.
+#' @param low_eqbound lower equivalence bounds (deprecated).
+#' @param high_eqbound upper equivalence bounds (deprecated).
 #' @param hypothesis 'EQU' for equivalence (default), or 'MET' for minimal effects test, the alternative hypothesis.
 #' @param eqbound_type Type of equivalence bound. Can be set to "SMD" for standardized mean difference (i.e., Cohen's d) or  "raw" for the mean difference. Default is "raw". Raw is strongly recommended as SMD bounds will produce biased results.
 #' @param alpha alpha level (default = 0.05)
 #' @param bias_correction Apply Hedges' correction for bias (default is TRUE).
 #' @param rm_correction Repeated measures correction to make standardized mean difference Cohen's d(rm). This only applies to repeated/paired samples. Default is FALSE.
 #' @param mu a number indicating the true value of the mean for the two tailed test (or difference in means if you are performing a two sample test).
+#' @param glass A option to calculate Glass's delta as an alternative to Cohen's d type SMD. Default is NULL to not calculate Glass's delta, "glass1" will use the first group's SD as the denominator whereas "glass2" will use the 2nd group's SD.
+#' @param smd_ci Method for calculating SMD confidence intervals. Methods include Goulet, noncentral t (nct), central t (t), and normal method (z).
 #' @param subset an optional vector specifying a subset of observations to be used.
 #' @param na.action a function which indicates what should happen when the data contain NAs. Defaults to getOption("na.action").
 #' @param ...  further arguments to be passed to or from methods.
+#' @details For details on the calculations in this function see vignette("IntroTOSTt") & vignette("SMD_calcs").
 #' @return An S3 object of class
 #'   \code{"TOSTt"} is returned containing the following slots:
 #' \describe{
@@ -29,6 +33,12 @@
 #'   \item{\code{"method"}}{Type of t-test.}
 #'   \item{\code{"decision"}}{List included text regarding the decisions for statistical inference.}
 #' }
+#' @examples
+#' data(mtcars)
+#' t_TOST(mpg ~ am,
+#' data = mtcars,
+#' eqb = 3)
+#' @family TOST
 #' @name t_TOST
 #' @export t_TOST
 
@@ -37,45 +47,51 @@ t_TOST <- function(x, ...,
                    hypothesis = "EQU",
                    paired = FALSE,
                    var.equal = FALSE,
+                   eqb,
                    low_eqbound,
                    high_eqbound,
                    eqbound_type = "raw",
                    alpha = 0.05,
                    bias_correction = TRUE,
-                   rm_correction = FALSE){
+                   rm_correction = FALSE,
+                   glass = NULL,
+                   smd_ci = c("nct", "goulet", "t", "z")){
   UseMethod("t_TOST")
 }
 
 #' @rdname t_TOST
-#' @importFrom stats sd cor na.omit setNames t.test terms
+#' @importFrom stats sd cor na.omit setNames t.test terms nlm optim optimize
 #' @method t_TOST default
 #' @export
 
 # @method t_TOST default
 t_TOST.default = function(x,
                           y = NULL,
-                          hypothesis = "EQU",
+                          hypothesis = c("EQU","MET"),
                           paired = FALSE,
                           var.equal = FALSE,
+                          eqb,
                           low_eqbound,
                           high_eqbound,
-                          eqbound_type = "raw",
+                          eqbound_type = c("raw","SMD"),
                           alpha = 0.05,
                           mu = 0,
                           bias_correction = TRUE,
                           rm_correction = FALSE,
+                          glass = NULL,
+                          smd_ci = c("nct", "goulet", "t", "z"),
                           ...) {
+  hypothesis = match.arg(hypothesis)
+  eqbound_type = match.arg(eqbound_type)
+  if(is.null(glass)){
+    glass = "no"
+  }
+  smd_ci = match.arg(smd_ci)
 
   if(bias_correction){
     smd_type = 'g'
   } else {
     smd_type = 'd'
-  }
-
-  if(rm_correction){
-    denom = "rm"
-  } else {
-    denom = "z"
   }
 
   if(is.null(y)){
@@ -84,6 +100,26 @@ t_TOST.default = function(x,
     sample_type = "Paired Sample"
   } else {
     sample_type = "Two Sample"
+  }
+
+  if(glass == "glass1" || glass == "glass2"){
+    if(glass == "glass1"){
+      denom = "glass1"
+    }
+
+    if(glass == "glass2"){
+      denom = "glass2"
+    }
+  } else{
+    if(sample_type != "Two Sample" ){
+      if(rm_correction){
+        denom = "rm"
+      } else {
+        denom = "z"
+      }
+    } else{
+      denom = "d"
+    }
   }
 
   if(hypothesis == "EQU"){
@@ -108,13 +144,21 @@ t_TOST.default = function(x,
     message("Warning: setting bound type to SMD produces biased results!")
   }
 
-  if(missing(low_eqbound) ||
-     missing(high_eqbound)){
+  if(missing(eqb) && (missing(low_eqbound) ||
+     missing(high_eqbound))){
     stop("Equivalence bounds missing and must be enterered")
   }
 
   if(!is.numeric(alpha) || alpha <=0 || alpha >=1){
     stop("The alpha must be a numeric value between 0 and 1")
+  }
+
+  if (!is.null(y)) {
+    dname <- paste(deparse(substitute(x)), "and",
+                   deparse(substitute(y)))
+  }
+  else {
+    dname <- deparse(substitute(x))
   }
 
 
@@ -133,7 +177,7 @@ t_TOST.default = function(x,
     data <- na.omit(data)
     colnames(data) = c("i1", "i2")
     data2 =  data
-    data2$diff = data2$i2 - data2$i1
+    data2$diff = data2$i2 - data2$i1 - mu
 
     n <- nrow(data)
     i1 <- data$i1
@@ -154,7 +198,8 @@ t_TOST.default = function(x,
       r12 = r12,
       type = smd_type,
       denom = denom,
-      alpha = alpha
+      alpha = alpha,
+      smd_ci = smd_ci
     )
 
   } else if(!missing(y)){
@@ -166,7 +211,7 @@ t_TOST.default = function(x,
     n2 = length(y1)
 
     m1 = mean(x1)
-    m2 = mean(y1)
+    m2 = mean(y1)-mu
 
     sd1 = sd(x1)
     sd2 = sd(y1)
@@ -180,14 +225,16 @@ t_TOST.default = function(x,
       sd2 = sd2,
       type = smd_type,
       var.equal = var.equal,
-      alpha = alpha
+      alpha = alpha,
+      denom = denom,
+      smd_ci = smd_ci
     )
 
   } else {
 
     x1 = na.omit(x)
     n1 = length(x1)
-    m1 = mean(x1)
+    m1 = mean(x1)-mu
     sd1 = sd(x1)
 
     cohen_res = d_est_one(
@@ -196,9 +243,25 @@ t_TOST.default = function(x,
       sd = sd1,
       type = smd_type,
       testValue = 0,
-      alpha = alpha
+      alpha = alpha,
+      smd_ci = smd_ci
     )
 
+  }
+
+  if(!missing(eqb)){
+    if(!is.numeric(eqb) || length(eqb) > 2){
+      stop(
+        "eqb must be a numeric of a length of 1 or 2"
+      )
+    }
+    if(length(eqb) == 1){
+      high_eqbound = abs(eqb)
+      low_eqbound = -1*abs(eqb)
+    } else {
+      high_eqbound = max(eqb)
+      low_eqbound = min(eqb)
+    }
   }
 
   if (eqbound_type == 'SMD') {
@@ -305,54 +368,34 @@ t_TOST.default = function(x,
 
   if(hypothesis == "EQU"){
     #format(low_eqbound, digits = 3, nsmall = 3, scientific = FALSE)
-    TOST_restext = paste0("The equivalence test was ",TOSToutcome,", t(",round(tresult$parameter, digits=2),") = ",format(tTOST, digits = 3, nsmall = 3, scientific = FALSE),", p = ",format(pTOST, digits = 3, nsmall = 3, scientific = TRUE),sep="")
+    TOST_restext = paste0("The equivalence test was ",
+                          TOSToutcome,", t(",round(tresult$parameter,
+                                                   digits=2),") = ",
+                          format(tTOST, digits = 3,
+                                 nsmall = 3, scientific = FALSE),", p = ",
+                          format(pTOST, digits = 3,
+                                 nsmall = 3, scientific = TRUE),sep="")
   } else {
-    TOST_restext = paste0("The minimal effect test was ",TOSToutcome,", t(",round(tresult$parameter, digits=2),") = ",format(tTOST, digits = 3, nsmall = 3, scientific = FALSE),", p = ",format(pTOST, digits = 3, nsmall = 3, scientific = TRUE),sep="")
+    TOST_restext = paste0("The minimal effect test was ",
+                          TOSToutcome,", t(",round(tresult$parameter,
+                                                   digits=2),") = ",
+                          format(tTOST, digits = 3,
+                                 nsmall = 3, scientific = FALSE),", p = ",
+                          format(pTOST, digits = 3,
+                                 nsmall = 3, scientific = TRUE),sep="")
   }
 
-  ttest_restext = paste0("The null hypothesis test was ",testoutcome,", t(",round(tresult$parameter, digits=2),") = ",format(tresult$statistic, digits = 3, nsmall = 3, scientific = FALSE),", p = ",format(tresult$p.value, digits = 3, nsmall = 3, scientific = TRUE),sep="")
-  if (hypothesis == "EQU"){
-    if(tresult$p.value <= alpha && pTOST <= alpha){
-      combined_outcome <- paste0("NHST: reject null significance hypothesis that the effect is equal to ",mu_text," \n",
-                                 "TOST: reject null equivalence hypothesis")
-    }
-    if(tresult$p.value < alpha && pTOST > alpha){
-      combined_outcome <- paste0("NHST: reject null significance hypothesis that the effect is equal to ",mu_text," \n ",
-                                 "TOST: don't reject null equivalence hypothesis")
-      # paste0("statistically different from ",mu_text," and not statistically equivalent")
-    }
-    if(tresult$p.value > alpha && pTOST <= alpha){
-      combined_outcome <- paste0("NHST: don't reject null significance hypothesis that the effect is equal to ",mu_text," \n ",
-                                 "TOST: reject null equivalence hypothesis")
-      #paste0("statistically not different from ",mu_text," and statistically equivalent")
-    }
-    if(tresult$p.value > alpha && pTOST > alpha){
-      combined_outcome <- paste0("NHST: don't reject null significance hypothesis that the effect is equal to ",mu_text," \n ",
-                                 "TOST: don't reject null equivalence hypothesis")
-      #paste0("statistically not different from ",mu_text," and not statistically equivalent")
-    }
-  } else {
-    if(tresult$p.value <= alpha && pTOST <= alpha){
-      combined_outcome <- paste0("NHST: reject null significance hypothesis that the effect is equal to ",mu_text," \n ",
-                                 "TOST: reject null MET hypothesis")
-      #paste0("statistically different from ",mu_text," and statistically greater than the minimal effect threshold")
-    }
-    if(tresult$p.value < alpha && pTOST > alpha){
-      combined_outcome <- paste0("NHST: reject null significance hypothesis that the effect is equal to ",mu_text," \n ",
-                                 "TOST: don't reject null MET hypothesis")
-      #paste0("statistically different from ",mu_text," but not statistically greater than the minimal effect threshold")
-    }
-    if(tresult$p.value > alpha && pTOST <= alpha){
-      combined_outcome <- paste0("NHST: don't reject null significance hypothesis that the effect is equal to ",mu_text," \n ",
-                                 "TOST: reject null MET hypothesis")
-      #paste0("statistically not different from ",mu_text," and statistically greater than the minimal effect threshold")
-    }
-    if(tresult$p.value > alpha && pTOST > alpha){
-      combined_outcome <- paste0("NHST: don't reject null significance hypothesis that the effect is equal to ",mu_text," \n ",
-                                 "TOST: don't reject null MET hypothesis")
-      #paste0("statistically not different from ",mu_text," and not statistically greater than the minimal effect threshold")
-    }
-  }
+  ttest_restext = paste0("The null hypothesis test was ",
+                         testoutcome,", t(",round(tresult$parameter, digits=2),") = ",
+                         format(tresult$statistic, digits = 3,
+                                nsmall = 3, scientific = FALSE),", p = ",
+                         format(tresult$p.value, digits = 3,
+                                nsmall = 3, scientific = TRUE),sep="")
+  combined_outcome = tost_decision(hypothesis = hypothesis,
+                                    alpha = alpha,
+                                    pvalue = tresult$p.value,
+                                    pTOST = pTOST,
+                                    mu_text = mu_text)
 
 
   decision = list(
@@ -372,7 +415,9 @@ t_TOST.default = function(x,
     hypothesis = test_hypothesis,
     effsize = effsize,
     smd = cohen_res,
-    decision = decision
+    decision = decision,
+    data.name = dname,
+    call = match.call()
   )
 
   class(rval) = "TOSTt"
@@ -409,7 +454,7 @@ t_TOST.formula = function(formula,
     stop("grouping factor must have exactly 2 levels")
   DATA <- setNames(split(mf[[response]], g), c("x", "y"))
   y <- do.call("t_TOST", c(DATA, list(...)))
-
+  y$data.name <- DNAME
   y
 
 }

@@ -3,6 +3,33 @@ NEWS
 
 **TOSTER R package and jamovi module**
 
+# TOSTER v0.6.0
+
+- Changed Glass's delta SE for paired samples (minor).
+- Added `smd_calc` and `ses_calc` for just calculating the standardized effect sizes (no tests).
+- Default CIs for for SMDs are now NCT rather than the Goulet method.
+- `compare_smd` can be supplied with user provided standard errors.
+- Add `log_TOST` and `boot_log_TOST` function for comparing ratios of means.
+- Reduce the amount of text in the `print` methods
+
+# TOSTER v0.5.1
+
+- Formatting requirements for jamovi (all superficial changes)
+
+# TOSTER v0.5.0
+
+- Added "compare" functions. 
+  - `compare_smd`: Compare 2 SMDs from summary statistics
+  - `boot_compare_smd`: Compare 2 SMDs from raw data
+  - `compare_cor`: Compare 2 independent correlations
+- Added additional SMD options
+  - Confidence intervals can now be estimated using other methods
+  - smd_ci can be used to set the confidence interval method
+  - Glass's delta can now be calculated using the `glass` argument
+- Added additional standardized effect sizes for `wilcox_TOST`
+  - `ses` argument can be set to "r", "odds", or "cstat" 
+  - Respectively, these will provide the rank-biserial correlation, odds, or concordance probability
+  
 # TOSTER v0.4.2
 
 - Fix to Cohen's drm calculation

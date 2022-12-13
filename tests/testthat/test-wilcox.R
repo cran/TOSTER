@@ -20,13 +20,21 @@ test_that("Run examples for one sample", {
   test1 = wilcox_TOST(x = samp1,
                  low_eqbound = -.5,
                  high_eqbound = .5)
-
+  test1_ses  = ses_calc(x = samp1,
+                        alpha = .1)
+  expect_equal(test1$effsize$estimate[2],
+               test1_ses$estimate)
+  expect_equal(test1$effsize$lower.ci[2],
+               test1_ses$lower.ci)
+  expect_equal(test1$effsize$upper.ci[2],
+               test1_ses$upper.ci)
+  ash = as_htest(test1)
 
   test3 = wilcox_TOST(x = samp1,
                  low_eqbound = -.5,
                  high_eqbound = .5,
                  hypothesis = "MET")
-
+  ash = as_htest(test3)
 
   expect_equal(1-test1$TOST$p.value[2],
                test3$TOST$p.value[2],
@@ -57,19 +65,23 @@ test_that("Run examples for two sample", {
                  y = samp2,
                  low_eqbound = -.5,
                  high_eqbound = .5)
-
+  ash = as_htest(test1)
 
   test3 = wilcox_TOST(x = samp1,
                  y = samp2,
                  low_eqbound = -.5,
                  high_eqbound = .5,
                  hypothesis = "MET")
-
+  ash = as_htest(test3)
   test1 = wilcox_TOST(formula = y ~ group,
                       data = df_samp,
                       low_eqbound = -.5,
                       high_eqbound = .5)
-
+  test1_smd = ses_calc(formula = y ~ group,
+                      data = df_samp)
+  expect_error(ses_calc(formula = y ~ group,
+                        data = df_samp,
+                        alpha = 1.1))
 
   test3 = wilcox_TOST(formula = y ~ group,
                       data = df_samp,
@@ -94,6 +106,15 @@ test_that("Run examples for paired samples", {
   set.seed(789461245)
 
   samp1 = rnorm(25)
+  expect_error(wilcox_TOST(x = samp1,
+                      eqb = c(-1,1,.5)))
+  expect_error(wilcox_TOST(x = samp1,
+                           eqb = c(-1,1),
+                           alpha= 1.22))
+  expect_error(wilcox_TOST(x = samp1,
+                           eqb = 1,
+                           hypothesis = "DDDDD"))
+  expect_error(wilcox_TOST(Sepal.Width ~ Species, data = iris))
   samp2 = rnorm(25)
 
   cor12 = stats::cor(samp1,samp2)
@@ -109,6 +130,14 @@ test_that("Run examples for paired samples", {
                  paired = TRUE,
                  low_eqbound = -.5,
                  high_eqbound = .5)
+  test1 = wilcox_TOST(x = samp1,
+                      y = samp2,
+                      paired = TRUE,
+                      eqb = c(-.5, .5))
+  test1 = wilcox_TOST(x = samp1,
+                      y = samp2,
+                      paired = TRUE,
+                      eqb =  .5)
 
   test3 = wilcox_TOST(x = samp1,
                  y = samp2,
@@ -127,4 +156,50 @@ test_that("Run examples for paired samples", {
 
   prtest = hush(print(test1))
 
+})
+
+
+test_that("Check rbs",{
+  set.seed(1847501)
+  z1 = rnorm(35)
+  z2 = rnorm(35)
+
+  # Two Sample ------
+  rbs1 = TOSTER:::rbs_calc(x=z1, y=z2, mu=0, paired=FALSE)
+  rbs2 = TOSTER:::rbs_calc(x=z2, y=z1, mu=0, paired=FALSE)
+  expect_equal(abs(rbs1),abs(rbs2))
+
+  # Paired Sample ------
+  rbs1 = TOSTER:::rbs_calc(x=z1, y=z2, mu=0, paired=TRUE)
+  rbs2 = TOSTER:::rbs_calc(x=z2, y=z1, mu=0, paired=TRUE)
+  expect_equal(abs(rbs1),abs(rbs2))
+
+  # Two Sample ------
+  rbs1 = TOSTER:::rbs_calc(x=z1, y=z2, mu=.5, paired=FALSE)
+  rbs2 = TOSTER:::rbs_calc(x=z2, y=z1, mu=.5, paired=FALSE)
+  #expect_equal(abs(rbs1),abs(rbs2))
+
+  # Paired Sample ------
+  rbs1 = TOSTER:::rbs_calc(x=z1, y=z2, mu=.5, paired=TRUE)
+  rbs2 = TOSTER:::rbs_calc(x=z2, y=z1, mu=.5, paired=TRUE)
+  #expect_equal(abs(rbs1),abs(rbs2))
+  x1 = 1.25
+  expect_equal(TOSTER:::pr_to_odds(TOSTER:::odds_to_pr(x1)),
+               1.25)
+
+  rb1 = .75
+
+  expect_equal(TOSTER:::cstat_to_rb(TOSTER:::rb_to_cstat(rb1)),
+               rb1)
+
+  z1 = .45
+
+  expect_equal(TOSTER:::rho_to_z(TOSTER:::z_to_rho(z1)),
+               z1)
+  test1= TOSTER:::ranktransform(z1,sign=FALSE,method="first")
+  test1= TOSTER:::ranktransform(z1,sign=TRUE,method="first")
+  test2 = TOSTER:::ranktransform(1)
+  test25 = TOSTER:::ranktransform(c(7,7,7,7,7))
+  test3 = TOSTER:::ranktransform(c(NA,NA,NA))
+  test3 = TOSTER:::ranktransform(c(TRUE,TRUE,FALSE))
 })

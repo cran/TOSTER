@@ -5,11 +5,35 @@ library(TOSTER)
 test1 = wilcox_TOST(formula = extra ~ group,
                       data = sleep,
                       paired = FALSE,
-                      low_eqbound = -.5,
-                      high_eqbound = .5)
+                      eqb = .5)
 
 
 print(test1)
+
+## -----------------------------------------------------------------------------
+# Rank biserial
+wilcox_TOST(formula = extra ~ group,
+                      data = sleep,
+                      paired = FALSE,
+                      ses = "r",
+                      eqb = .5)
+
+# Odds
+
+wilcox_TOST(formula = extra ~ group,
+                      data = sleep,
+                      paired = FALSE,
+                      ses = "o",
+                      eqb = .5)
+
+# Concordance
+
+wilcox_TOST(formula = extra ~ group,
+                      data = sleep,
+                      paired = FALSE,
+                      ses = "c",
+                      eqb = .5)
+
 
 ## -----------------------------------------------------------------------------
 data('sleep')
@@ -17,12 +41,30 @@ data('sleep')
 test1 = boot_t_TOST(formula = extra ~ group,
                       data = sleep,
                       paired = TRUE,
-                      low_eqbound = -.5,
-                      high_eqbound = .5,
+                      eqb = .5,
                     R = 999)
 
 
 print(test1)
 
 plot(test1)
+
+## -----------------------------------------------------------------------------
+log_TOST(
+  mpg ~ am,
+  data = mtcars
+)
+
+## -----------------------------------------------------------------------------
+boot_log_TOST(
+  mpg ~ am,
+  data = mtcars,
+  R = 499
+)
+
+## -----------------------------------------------------------------------------
+ses_calc(formula = extra ~ group,
+         data = sleep,
+         paired = TRUE,
+         ses = "r")
 

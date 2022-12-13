@@ -6,9 +6,16 @@
 \alias{plot.TOSTt}
 \title{Methods for TOSTt objects}
 \usage{
-\method{print}{TOSTt}(x, digits = getOption("digits"), ...)
+\method{print}{TOSTt}(x, digits = 4, ...)
 
-\method{plot}{TOSTt}(x, type = "cd", estimates = c("raw", "SMD"), ci_lines, ci_shades, ...)
+\method{plot}{TOSTt}(
+  x,
+  type = c("cd", "c", "tnull"),
+  estimates = c("raw", "SMD"),
+  ci_lines,
+  ci_shades,
+  ...
+)
 }
 \arguments{
 \item{x}{object of class \code{TOSTt}}

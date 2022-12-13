@@ -165,9 +165,11 @@ dataTOSTtwoResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class
                 options=options,
                 name="",
                 title="TOST Independent Samples T-Test")
-            self$add(jmvcore::Preformatted$new(
+            self$add(jmvcore::Html$new(
                 options=options,
-                name="text"))
+                name="text",
+                refs=list(
+                    "TOSTER")))
             self$add(jmvcore::Table$new(
                 options=options,
                 name="tost",
@@ -401,8 +403,8 @@ dataTOSTtwoResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class
                     options=options,
                     title="$key",
                     renderFun=".plot",
-                    width=425,
-                    height=425,
+                    width=500,
+                    height=500,
                     clearWith=list(
                         "group",
                         "alpha",
@@ -456,7 +458,8 @@ dataTOSTtwoBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 
 #' TOST Independent Samples T-Test
 #'
-#' TOST Independent Samples T-Test
+#' TOST Independent Samples T-Test for jamovi. This function is not meant to 
+#' be utilized in R. See t_TOST function.
 #'
 #' @examples
 #' library(TOSTER)
@@ -501,7 +504,7 @@ dataTOSTtwoBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #'   effect size is biased (d) or bias-corrected (g).
 #' @return A results object containing:
 #' \tabular{llllll}{
-#'   \code{results$text} \tab \tab \tab \tab \tab a preformatted \cr
+#'   \code{results$text} \tab \tab \tab \tab \tab a html \cr
 #'   \code{results$tost} \tab \tab \tab \tab \tab a table \cr
 #'   \code{results$eqb} \tab \tab \tab \tab \tab a table \cr
 #'   \code{results$effsize} \tab \tab \tab \tab \tab a table \cr
