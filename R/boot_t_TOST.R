@@ -1,5 +1,5 @@
 #' @title Bootstrapped TOST with t-tests
-#' @description A function for a bootstrap method for TOST with all types of t-tests..
+#' @description A function for a bootstrap method for TOST with all types of t-tests.
 #' @param R number of bootstrap replicates
 #' @inheritParams t_TOST
 #' @details For details on the calculations in this function see vignette("robustTOST").
@@ -18,7 +18,7 @@
 #' }
 #' @details The implemented test(s) corresponds to the proposal of Chapter 16 of Efron and Tibshirani (1994).
 #'  Returns TOSTt class object with bootstrapped based results.
-#'  Please note that the repeated measures "corrected" effect size is not available at this time.
+#'  Please note that the repeated measures "corrected" effect size is not available.
 #'
 #' For details on the calculations in this function see vignette("robustTOST").
 #' @section References:

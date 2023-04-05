@@ -149,7 +149,23 @@ res1a = t_TOST(x = subset(sleep,group==1)$extra,
                eqb = .5)
 
 ## -----------------------------------------------------------------------------
+# Simple htest
+
+res1b = simple_htest(formula = extra ~ group,
+                     data = sleep,
+                     mu = .5, # set equivalence bound
+                     alternative = "e")
+
+
+
+## -----------------------------------------------------------------------------
+
+# t_TOST
 print(res1)
+
+# htest
+
+print(res1b)
 
 ## ----fig.width=6, fig.height=6------------------------------------------------
 plot(res1, type = "cd")
@@ -163,12 +179,25 @@ plot(res1, type = "cd")
 plot(res1, type = "c",
      ci_lines =  c(.9,.95))
 
+## ---- eval = FALSE------------------------------------------------------------
+#  describe(res1)
+#  
+#  describe_htest(res1b)
+
 ## -----------------------------------------------------------------------------
 res2 = t_TOST(formula = extra ~ group,
               data = sleep,
               paired = TRUE,
               eqb = .5)
 res2
+
+res2b = simple_htest(
+  formula = extra ~ group,
+  data = sleep,
+  paired = TRUE,
+  mu = .5,
+  alternative = "e")
+res2b
 
 ## -----------------------------------------------------------------------------
 res3 = t_TOST(x = iris$Sepal.Length,
@@ -177,14 +206,35 @@ res3 = t_TOST(x = iris$Sepal.Length,
               eqb = 1)
 res3
 
+res3a = simple_htest(
+  x = iris$Sepal.Length,
+  y = iris$Sepal.Width,
+  paired = TRUE,
+  mu = 1,
+  alternative = "e"
+)
+res3a
+
 ## -----------------------------------------------------------------------------
-res3a = t_TOST(x = iris$Sepal.Length,
+res_met = t_TOST(x = iris$Sepal.Length,
               y = iris$Sepal.Width,
                paired = TRUE,
                hypothesis = "MET",
                eqb = 1,
               smd_ci = "goulet")
-res3a
+res_met
+
+res_metb = simple_htest(x = iris$Sepal.Length,
+                       y = iris$Sepal.Width,
+                       paired = TRUE,
+                       mu = 1,
+                       alternative = "minimal.effect")
+res_metb
+
+## ---- eval = FALSE------------------------------------------------------------
+#  describe(res_met)
+#  
+#  describe_htest(res_metb)
 
 ## -----------------------------------------------------------------------------
 res4 = t_TOST(x = iris$Sepal.Length,
@@ -206,6 +256,9 @@ res_tsum
 
 ## ----fig.width=6, fig.height=6------------------------------------------------
 plot(res_tsum)
+
+## -----------------------------------------------------------------------------
+describe(res_tsum)
 
 ## -----------------------------------------------------------------------------
 power_t_TOST(n = NULL,

@@ -13,9 +13,30 @@
 #'   \code{\link{TOSTt-methods}}.
 #' @return
 #' \describe{
-#'   \item{\code{print}}{Prints short summary of the Limits of Agreement}
-#'   \item{\code{plot}}{Returns a plot of the data points used in the reliability analysis}
+#'   \item{\code{print}}{Prints short summary of the tests.}
+#'   \item{\code{plot}}{Returns a plot of the effects.}
+#'   \item{\code{describe}}{Verbose description of results.}
 #' }
+#'
+#' @examples
+#' # example code
+#' # Print
+#'
+#' res1 = t_TOST(mpg ~ am, data = mtcars, eqb = 3)
+#'
+#' res1
+#' # Print with more digits
+#' print(res1, digits = 6)
+#' \dontrun{
+#' # Plot with density plot - only raw values (SLOW)
+#' plot(res1, type = "cd", estimates = "raw")
+#' # Plot with consonance - only raw values (SLOW)
+#' plot(res1, type = "c", estimates = "raw")
+#' # Plot null distribution - only raw values
+#' plot(res1, type = "tnull", estimates = "raw")
+#' }
+#' # Get description of the results
+#' describe(res1)
 #'
 #' @name TOSTt-methods
 
@@ -265,7 +286,7 @@ plot.TOSTt <- function(x,
           sigma = sigma,
           ncp = lambda
         ),
-        fill = stat(cut_cdf_qi(p = cdf,
+        fill = after_stat(cut_cdf_qi(p = cdf,
                                .width = sets))
       ),
       .width = c2,
@@ -383,7 +404,7 @@ plot.TOSTt <- function(x,
                         stringsAsFactors = FALSE)
       t_plot = ggplot(data = df_t,
                       aes(y = 0, x = val)) +
-        stat_halfeye(aes(fill = stat(cut_cdf_qi(
+        stat_halfeye(aes(fill = after_stat(cut_cdf_qi(
           cdf,
           .width = sets
         ))),
@@ -422,7 +443,7 @@ plot.TOSTt <- function(x,
 
       d_plot = ggplot(data = df_d,
                       aes(y = 0, x = val)) +
-        stat_halfeye(aes(fill = stat(cut_cdf_qi(
+        stat_halfeye(aes(fill =after_stat(cut_cdf_qi(
           cdf,
           .width = sets
         ))),
@@ -609,4 +630,198 @@ plot.TOSTt <- function(x,
     return(t_plot)
   }
 
+}
+
+#' @rdname TOSTt-methods
+#' @export
+
+describe <- function(x, ...) {
+  UseMethod("describe")
+}
+
+#' @rdname TOSTt-methods
+#' @method describe TOSTt
+#' @export
+
+describe.TOSTt <- function(x,
+                           digits = 3,
+                           ...){
+
+  text2 = describe_TOST(x = x,
+                        digits = digits,
+                        ...)
+
+  return(text2)
+}
+
+
+describe_TOST = function(x,
+                         digits = 3,
+                         ...){
+  tosty = x
+  htest = as_htest(x)
+
+  type_tost = ifelse(htest$alternative == "equivalence",
+                     "equivalence",
+                     "minimal effect")
+  nhst_null = ifelse(is.null(tosty$call$mu),
+                     0,
+                     tosty$call$mu)
+  alt_nhst = paste0("true ",
+                    names(htest$null.value[1]),
+                    " is ",
+                    "not equal to",
+                    " ",
+                    nhst_null)
+
+  null_nhst = paste0("true ",
+                     names(htest$null.value[1]),
+                     " is ",
+                     "equal to",
+                     " ",
+                     nhst_null)
+  if(htest$alternative == "equivalence"){
+
+    alt_tost = paste0("true ",
+                      names(htest$null.value)[1],
+                      " is ",
+                      "between",
+                      " ",
+                      htest$null.value[1], " and ",
+                      htest$null.value[2])
+
+    null_tost = paste0("true ",
+                       names(htest$null.value)[1],
+                       " is ",
+                       "more extreme than",
+                       " ",
+                       htest$null.value[1], " and ",
+                       htest$null.value[2])
+
+  }
+  if(htest$alternative == "minimal.effect"){
+
+    alt_tost = paste0("true ",
+                      names(htest$null.value)[1],
+                      " is ",
+                      "less than ",
+                      htest$null.value[1], " or ",
+                      "greater than ",
+                      htest$null.value[2])
+
+    null_tost = paste0("true ",
+                       names(htest$null.value)[1],
+                       " is ",
+                       "greater than ",
+                       htest$null.value[1], " or ",
+                       "less than ",
+                       htest$null.value[2])
+
+  }
+
+  method_state = paste0("Using the ", htest$method,
+                        ", a null hypothesis significance test (NHST)",
+                        ", and a ",type_tost," test, via two one-sided tests (TOST), were performed",
+                        " with an alpha-level of ", x$alpha, ".",
+                        " These tested the null hypotheses that ", null_nhst,
+                        " (NHST), and ", null_tost," (TOST).")
+
+
+
+  pTOST = htest$p.value
+  sigTOST = ifelse(pTOST < tosty$alpha, TRUE,FALSE)
+  pNHST = tosty$TOST$p.value[1]
+  sigNHST = ifelse(pNHST < tosty$alpha, TRUE,FALSE)
+  stat_name = names(htest$statistic)
+  smd_name = row.names(tosty$effsize)[2]
+
+
+  if(sigTOST){
+    if(!is.null(htest$parameter)){
+      stat_print = paste0(stat_name, "(",
+                          rounder_stat(htest$parameter, digits = digits),
+                          ") = ",
+                          rounder_stat(htest$statistic, digits = digits))
+    } else{
+      stat_print = paste0(stat_name, " = ",
+                          rounder_stat(htest$statistic, digits = digits))
+    }
+
+    sig_text = paste0("The ", type_tost, " test",
+                      " was significant, ",
+                      stat_print,
+                      ", ",
+                      printable_pval(pTOST, digits = digits))
+
+    claim_text = paste0("At the desired error rate, it can be stated that the ",
+                        alt_tost, ".")
+  } else if(sigNHST){
+    if(!is.null(htest$parameter)){
+      stat_print = paste0(stat_name, "(",
+                          rounder_stat(htest$parameter, digits = digits),
+                          ") = ",
+                          rounder_stat(tosty$TOST[1,1], digits = digits))
+    } else{
+      stat_print = paste0(stat_name, " = ",
+                          rounder_stat(tosty$TOST[1,1], digits = digits))
+    }
+    sig_text = paste0("The ", type_tost, " test was not significant (",
+                      printable_pval(pTOST, digits = digits),").",
+                      " The NHST",
+                      " was significant, ",
+                      stat_print,
+                      ", ",
+                      printable_pval(pNHST, digits = digits))
+
+    claim_text = paste0("At the desired error rate, it can be stated that the ",
+                        alt_nhst,
+                        " (i.e., no ",type_tost,
+                        ").")
+  } else {
+    sig_text = paste0("Both the ", type_tost, " test (",
+                      printable_pval(pTOST, digits = digits),
+                      "), and the NHST (",
+                      printable_pval(pNHST, digits = digits),
+                      ")",
+                      " were not significant")
+
+    claim_text = paste0("Therefore, the results are inconclusive: neither null hypothesis can be rejected.")
+  }
+
+  stat_text = paste0(sig_text,
+                     " (",
+                     names(htest$null.value[1]),
+                     " = ",
+                     rounder_stat(htest$estimate,
+                                  digits = digits),
+                     " ",
+                     100 * attr(htest$conf.int, "conf.level"),
+                     "% C.I.[",
+                     rounder_stat(min(htest$conf.int),
+                                  digits = digits),
+                     ", ",
+                     rounder_stat(max(htest$conf.int),
+                                  digits = digits),
+                     "]",
+                     "; ",
+                     smd_name,
+                     " = ",
+                     rounder_stat(tosty$effsize$estimate[2],
+                                  digits = digits),
+                     " ",
+                     100 * attr(htest$conf.int, "conf.level"),
+                     "% C.I.[",
+                     rounder_stat(tosty$effsize$lower.ci[2],
+                                  digits = digits),
+                     ", ",
+                     rounder_stat(tosty$effsize$upper.ci[2],
+                                  digits = digits),
+                     "]",
+                     ").")
+
+  text2 = paste(method_state, stat_text,
+                claim_text,
+                sep = " ")
+
+  return(text2)
 }

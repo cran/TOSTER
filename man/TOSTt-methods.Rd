@@ -4,6 +4,8 @@
 \alias{TOSTt-methods}
 \alias{print.TOSTt}
 \alias{plot.TOSTt}
+\alias{describe}
+\alias{describe.TOSTt}
 \title{Methods for TOSTt objects}
 \usage{
 \method{print}{TOSTt}(x, digits = 4, ...)
@@ -16,6 +18,10 @@
   ci_shades,
   ...
 )
+
+describe(x, ...)
+
+\method{describe}{TOSTt}(x, digits = 3, ...)
 }
 \arguments{
 \item{x}{object of class \code{TOSTt}}
@@ -36,10 +42,32 @@ for details.
 }
 \value{
 \describe{
-  \item{\code{print}}{Prints short summary of the Limits of Agreement}
-  \item{\code{plot}}{Returns a plot of the data points used in the reliability analysis}
+  \item{\code{print}}{Prints short summary of the tests.}
+  \item{\code{plot}}{Returns a plot of the effects.}
+  \item{\code{describe}}{Verbose description of results.}
 }
 }
 \description{
 Methods defined for objects returned from the t_TOST and boot_t_TOST functions.
+}
+\examples{
+# example code
+# Print
+
+res1 = t_TOST(mpg ~ am, data = mtcars, eqb = 3)
+
+res1
+# Print with more digits
+print(res1, digits = 6)
+\dontrun{
+# Plot with density plot - only raw values (SLOW)
+plot(res1, type = "cd", estimates = "raw")
+# Plot with consonance - only raw values (SLOW)
+plot(res1, type = "c", estimates = "raw")
+# Plot null distribution - only raw values
+plot(res1, type = "tnull", estimates = "raw")
+}
+# Get description of the results
+describe(res1)
+
 }

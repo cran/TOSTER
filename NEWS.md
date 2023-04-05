@@ -3,6 +3,17 @@ NEWS
 
 **TOSTER R package and jamovi module**
 
+# TOSTER v0.7.1
+
+- Fixing the ggplot2 error related to `after_stat` update from that package.
+- Update documentation.
+
+# TOSTER v0.7.0
+
+- Add correlation functions `z_cor_test`, `boot_cor_test`, `corsum_test`, `boot_compare_cor`, and `simple_htest`
+- Add `describe` method to provide verbose output for analyses
+  - Alternative `describe_htest` function for htest objects
+
 # TOSTER v0.6.0
 
 - Changed Glass's delta SE for paired samples (minor).
