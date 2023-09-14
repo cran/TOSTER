@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_corr.R
 \name{plot_cor}
 \alias{plot_cor}
-\title{Function to produce plots of the distribution of standard correlation coefficients}
+\title{Plot correlation coefficients}
 \usage{
 plot_cor(
   r,
@@ -19,7 +19,7 @@ plot_cor(
 
 \item{method}{The method by which the coefficient was calculated: pearson, spearman, or kendall (default is "pearson")}
 
-\item{type}{Choose whether to plot a "consonance" function ("c"), consonance density ("cd"), or both (c("c","cd"); defualt option).}
+\item{type}{Choose whether to plot a "consonance" function ("c"), consonance density ("cd"), or both (c("c","cd"); default option).}
 
 \item{levels}{Numeric vector of confidence levels to display}
 }
@@ -27,15 +27,24 @@ plot_cor(
 Returns plot of the distribution of the correlation coefficient.
 }
 \description{
-Function to produce plots of the distribution of standard correlation coefficients
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
+
+Function to produce plots of the distribution of standard correlation coefficients.
 }
 \details{
 This function was created so that users could create consonance plots of Pearson's correlation coefficient.
-These types of plots are discussed by Schweder T, Hjort NL. (2016, ISBN:9781316445051) and Rafi Z, Greenland S. (2020) <doi:10.1186/s12874-020-01105-9>.
+These types of plots are discussed by Schweder T, Hjort NL. (2016, ISBN:9781316445051) and Rafi Z, Greenland S. (2020) \url{doi:10.1186/s12874-020-01105-9}.
 }
 \seealso{
+Other Correlations: 
+\code{\link{boot_cor_test}()},
+\code{\link{corsum_test}()},
+\code{\link{power_z_cor}()},
+\code{\link{z_cor_test}()}
+
 Other plotting functions: 
 \code{\link{plot_pes}()},
 \code{\link{plot_smd}()}
 }
+\concept{Correlations}
 \concept{plotting functions}

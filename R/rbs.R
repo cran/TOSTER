@@ -1,12 +1,15 @@
 #' @title Non-parametric standardized effect sizes (replicates of ses_calc)
-#' @description Effect sizes for simple (one or two sample) non-parametric tests.
+#' @description
+#' `r lifecycle::badge('superseded')`
+#'
+#' Effect sizes for simple (one or two sample) non-parametric tests. Suggested to use [ses_calc] function instead.
 #' @param x a (non-empty) numeric vector of data values.
 #' @param y an optional (non-empty) numeric vector of data values.
 #' @param mu a number indicating the value around which (a-)symmetry (for
 #'   one-sample or paired samples) or shift (for independent samples) is to be
 #'   estimated. See [stats::wilcox.test].
 #' @param paired a logical indicating whether you want to calculate a paired test.
-#' @param ses Rank-biserial (rb), odds (odds), and concordance probablity (cstat).
+#' @param ses Rank-biserial (rb), odds (odds), and concordance probability (cstat).
 #' @param conf.level confidence level of the interval.
 #'
 #' @details

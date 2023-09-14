@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_smd.R
 \name{plot_smd}
 \alias{plot_smd}
-\title{Function to produce plots of the distribution of the standardized mean difference}
+\title{Plot Distribution of a SMD}
 \usage{
 plot_smd(
   d,
@@ -28,7 +28,7 @@ plot_smd(
 
 \item{smd_label}{Label for the x-axis indicating the SMD measure}
 
-\item{type}{Choose whether to plot a "consonance" function ("c"), consonance density ("cd"), or both (c("c","cd"); defualt option).}
+\item{type}{Choose whether to plot a "consonance" function ("c"), consonance density ("cd"), or both (c("c","cd"); default option).}
 
 \item{levels}{Numeric vector of confidence levels to display}
 }
@@ -36,13 +36,15 @@ plot_smd(
 Returns plot of the distribution of the standardized mean difference.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
+
 Function to produce plots of the distribution of the standardized mean difference
 }
 \details{
 This function was created so that users could create plots from their own SMD calculations and were inspired by the concurve R package.
 The difficulty is that specific information must be past onto this function.
 The calculations for the standardized mean difference can be found in the vignettes of this package.
-These types of plots are discussed by Schweder T, Hjort NL. (2016, ISBN:9781316445051) and Rafi Z, Greenland S. (2020) <doi:10.1186/s12874-020-01105-9>.
+These types of plots are discussed by Schweder T, Hjort NL. (2016, ISBN:9781316445051) and Rafi Z, Greenland S. (2020) \url{doi:10.1186/s12874-020-01105-9}.
 }
 \seealso{
 Other plotting functions: 

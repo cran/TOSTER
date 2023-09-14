@@ -1,12 +1,15 @@
-#' Function to produce plots of the distribution of the standardized mean difference
-#' @description Function to produce plots of the distribution of the standardized mean difference
+#' @title Plot Distribution of a SMD
+#' @description
+#' `r lifecycle::badge('stable')`
+#'
+#'Function to produce plots of the distribution of the standardized mean difference
 #' @param d Estimate of the standardized mean difference
 #' @param df degrees of freedom for the standardized mean difference
 #' @param lambda The non-centrality parameter for the standardized mean difference
 #' @param sigma The standard error for the standardized mean difference
 #' @param smd_ci Method for calculating SMD confidence intervals. Methods include Goulet, noncentral t (nct), central t (t), and normal method (z).
 #' @param smd_label Label for the x-axis indicating the SMD measure
-#' @param type Choose whether to plot a "consonance" function ("c"), consonance density ("cd"), or both (c("c","cd"); defualt option).
+#' @param type Choose whether to plot a "consonance" function ("c"), consonance density ("cd"), or both (c("c","cd"); default option).
 #' @param levels Numeric vector of confidence levels to display
 #' @details
 #' This function was created so that users could create plots from their own SMD calculations and were inspired by the concurve R package.
