@@ -21,7 +21,7 @@ equ_ftest(Fstat = 34.70228,
 equ_anova(aovtest,
           eqbound = 0.35)
 
-## ---- fig.width=6, fig.height=6-----------------------------------------------
+## ----fig.width=6, fig.height=6------------------------------------------------
 plot_pes(Fstat = 34.70228,
          df1 = 5,
          df2 = 66)

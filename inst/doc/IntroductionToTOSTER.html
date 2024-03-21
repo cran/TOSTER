@@ -12,7 +12,7 @@
 
 <meta name="author" content="Daniel Lakens; Updated by Aaron Caldwell" />
 
-<meta name="date" content="2023-09-14" />
+<meta name="date" content="2024-03-21" />
 
 <title>Introduction to Equivalence Testing with TOSTER</title>
 
@@ -121,13 +121,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -334,7 +341,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Introduction to Equivalence Testing with
 TOSTER</h1>
 <h4 class="author">Daniel Lakens; Updated by Aaron Caldwell</h4>
-<h4 class="date">2023-09-14</h4>
+<h4 class="date">2024-03-21</h4>
 
 
 
@@ -534,7 +541,7 @@ scalepoints).</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># NEW CODE</span></span>
 <span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">tsum_TOST</span>(<span class="at">m1=</span><span class="fl">5.25</span>,<span class="at">m2=</span><span class="fl">5.22</span>,<span class="at">sd1=</span><span class="fl">0.95</span>,<span class="at">sd2=</span><span class="fl">0.83</span>,<span class="at">n1=</span><span class="dv">95</span>,<span class="at">n2=</span><span class="dv">89</span>,<span class="at">eqb=</span><span class="fl">0.429</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">var.equal=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>## 
-## Standard Two-Sample t-Test
+## Two Sample t-test
 ## 
 ## The equivalence test was significant, t(182) = -3.025, p = 1.42e-03
 ## The null hypothesis test was non-significant, t(182) = 0.227, p = 8.2e-01
@@ -611,7 +618,7 @@ indeed equivalent, based on equivalence bounds of -0.05 and 0.05.</p>
 <span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>          <span class="at">eqbound_type =</span> <span class="st">&quot;SMD&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning: setting bound type to SMD produces biased results!</code></pre>
 <pre><code>## 
-## Welch Modified Two-Sample t-Test
+## Welch Two Sample t-test
 ## 
 ## The equivalence test was significant, t(79260.94) = -5.491, p = 2.01e-08
 ## The null hypothesis test was non-significant, t(79260.94) = 1.554, p = 1.2e-01
@@ -797,7 +804,7 @@ in row 6:</p>
 <span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a><span class="fu">tsum_TOST</span>(<span class="at">m1=</span><span class="fl">5.71</span><span class="dv">-6</span>,<span class="at">sd1=</span><span class="fl">1.79</span>,<span class="at">n1=</span><span class="dv">20</span>,<span class="at">eqb=</span><span class="fl">0.68</span>, <span class="at">eqbound_type =</span> <span class="st">&quot;SMD&quot;</span>)</span></code></pre></div>
 <pre><code>## Warning: setting bound type to SMD produces biased results!</code></pre>
 <pre><code>## 
-## One-sample t-Test
+## One-sample t-test
 ## 
 ## The equivalence test was significant, t(19) = 2.317, p = 1.59e-02
 ## The null hypothesis test was non-significant, t(19) = -0.725, p = 4.78e-01

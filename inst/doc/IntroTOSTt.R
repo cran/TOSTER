@@ -179,7 +179,7 @@ plot(res1, type = "cd")
 plot(res1, type = "c",
      ci_lines =  c(.9,.95))
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  describe(res1)
 #  
 #  describe_htest(res1b)
@@ -231,7 +231,7 @@ res_metb = simple_htest(x = iris$Sepal.Length,
                        alternative = "minimal.effect")
 res_metb
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  describe(res_met)
 #  
 #  describe_htest(res_metb)

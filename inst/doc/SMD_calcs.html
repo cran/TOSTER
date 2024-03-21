@@ -12,7 +12,7 @@
 
 <meta name="author" content="Aaron R. Caldwell" />
 
-<meta name="date" content="2023-09-14" />
+<meta name="date" content="2024-03-21" />
 
 <title>Standardized Mean Differences</title>
 
@@ -121,13 +121,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -356,7 +363,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Standardized Mean Differences</h1>
 <h3 class="subtitle">The calculation of Cohen’s d type effect sizes</h3>
 <h4 class="author">Aaron R. Caldwell</h4>
-<h4 class="date">2023-09-14</h4>
+<h4 class="date">2024-03-21</h4>
 
 
 <div id="TOC">
@@ -583,7 +590,7 @@ Hedges correction (calculation above).</p>
 <li>Under all other methods (nct, t, or z):</li>
 </ol>
 <p><span class="math display">\[
-\sigma_{SMD} = \sqrt{\frac{n_1+n_2}{n_1 \cdot n_2} \cdot \frac{d^2}{2
+\sigma_{SMD} = \sqrt{\frac{n_1+n_2}{n_1 \cdot n_2} + \frac{d^2}{2
 \cdot(n_1+n_2)} \cdot J^2}
 \]</span></p>
 </div>
@@ -935,16 +942,29 @@ CI = SMD \space \pm \space z_{(1-\alpha)} \cdot \sigma_{SMD}
 <div id="just-estimate-the-smd" class="section level1">
 <h1>Just Estimate the SMD</h1>
 <p>It was requested that a function be provided that only calculates the
-SMD. Therefore, I created the <code>smd_calc</code> function. The
-interface is almost the same as <code>t_TOST</code> but you don’t set an
-equivalence bound.</p>
+SMD. Therefore, I created the <code>smd_calc</code> and
+<code>boot_smd_calc</code> functions<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>. The interface is almost the same as
+<code>t_TOST</code> but you don’t set an equivalence bound.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">smd_calc</span>(<span class="at">formula =</span> extra <span class="sc">~</span> group,</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>         <span class="at">data =</span> sleep,</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>         <span class="at">paired =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>         <span class="at">smd_ci =</span> <span class="st">&quot;nct&quot;</span>,</span>
 <span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>         <span class="at">bias_correction =</span> F)</span>
 <span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt;               estimate        SE  lower.ci   upper.ci conf.level</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; Cohen&#39;s d(z) -1.284558 0.4272053 -2.118017 -0.4146278       0.95</span></span></code></pre></div>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; Cohen&#39;s d(z) -1.284558 0.4272053 -2.118017 -0.4146278       0.95</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co"># Setting bootstrap replications low to</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="do">## reduce compiling time of vignette</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="fu">boot_smd_calc</span>(<span class="at">formula =</span> extra <span class="sc">~</span> group,</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>         <span class="at">data =</span> sleep,</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>         <span class="at">R =</span> <span class="dv">199</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>         <span class="at">paired =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>         <span class="at">boot_ci =</span> <span class="st">&quot;stud&quot;</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>         <span class="at">bias_correction =</span> F)</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt;               estimate      bias        SE  lower.ci upper.ci conf.level</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt; Cohen&#39;s d(z) -1.284558 0.1367813 0.6744843 -1.605842 1.138721       0.95</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt;              boot_ci</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt; Cohen&#39;s d(z)    stud</span></span></code></pre></div>
 </div>
 <div id="plotting-smds" class="section level1">
 <h1>Plotting SMDs</h1>
@@ -1152,6 +1172,10 @@ material of <span class="citation">Cousineau and Goulet-Pelletier
 <li id="fn3"><p>This is incorrectly stated in the article by <span class="citation">Goulet-Pelletier and Cousineau (2018)</span>; the
 correct notation is provided by <span class="citation">Lakens
 (2013)</span><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>The results differ greatly because the bootstrap CI
+method, studentized, is more conservative than the parametric method.
+This difference is more apparent with extremely small samples like that
+in the <code>sleep</code> dataset.<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 

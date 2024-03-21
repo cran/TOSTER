@@ -12,7 +12,7 @@
 
 <meta name="author" content="Aaron R. Caldwell" />
 
-<meta name="date" content="2023-09-14" />
+<meta name="date" content="2024-03-21" />
 
 <title>Correlations</title>
 
@@ -121,13 +121,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -355,7 +362,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Correlations</h1>
 <h4 class="author">Aaron R. Caldwell</h4>
-<h4 class="date">2023-09-14</h4>
+<h4 class="date">2024-03-21</h4>
 
 
 <div id="TOC">
@@ -515,7 +522,7 @@ function.</p>
 ## correlation correlation 
 ##         0.4        -0.4 
 ## 90 percent confidence interval:
-##  0.2445273 0.5848411
+##  0.2512992 0.5930089
 ## sample estimates:
 ##      cor 
 ## 0.418684</code></pre>
@@ -534,7 +541,7 @@ function.</p>
 ##  rho  rho 
 ##  0.4 -0.4 
 ## 90 percent confidence interval:
-##  0.1983190 0.6656253
+##  0.2676957 0.7365611
 ## sample estimates:
 ##       rho 
 ## 0.4669358</code></pre>
@@ -553,7 +560,7 @@ function.</p>
 ##  tau  tau 
 ##  0.4 -0.4 
 ## 90 percent confidence interval:
-##  0.1217169 0.4864510
+##  0.1442440 0.5090649
 ## sample estimates:
 ##       tau 
 ## 0.3153652</code></pre>
@@ -575,7 +582,7 @@ percentage bend correlation, can also be tested.</p>
 ## wincor wincor 
 ##    0.4   -0.4 
 ## 90 percent confidence interval:
-##  0.2163284 0.6629980
+##  0.2651060 0.7125775
 ## sample estimates:
 ##   wincor 
 ## 0.464062</code></pre>
@@ -595,7 +602,7 @@ percentage bend correlation, can also be tested.</p>
 ##   pb   pb 
 ##  0.4 -0.4 
 ## 90 percent confidence interval:
-##  0.2341348 0.6455867
+##  0.2509131 0.6634791
 ## sample estimates:
 ##        pb 
 ## 0.4484488</code></pre>
