@@ -12,7 +12,7 @@
 
 <meta name="author" content="Aaron R. Caldwell" />
 
-<meta name="date" content="2024-04-16" />
+<meta name="date" content="2024-05-08" />
 
 <title>An Introduction to t_TOST</title>
 
@@ -51,7 +51,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -150,6 +150,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 div.csl-bib-body { }
 div.csl-entry {
 clear: both;
+margin-bottom: 0em;
 }
 .hanging div.csl-entry {
 margin-left:2em;
@@ -363,7 +364,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">An Introduction to t_TOST</h1>
 <h3 class="subtitle">A new function for TOST with t-tests</h3>
 <h4 class="author">Aaron R. Caldwell</h4>
-<h4 class="date">2024-04-16</h4>
+<h4 class="date">2024-05-08</h4>
 
 
 <div id="TOC">
@@ -580,9 +581,9 @@ would need to then is change <code>paired</code> to TRUE.</p>
 <span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a><span class="co">#&gt; TOST Upper -5.348  9 &lt; 0.001</span></span>
 <span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a><span class="co">#&gt; Effect Sizes </span></span>
-<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a><span class="co">#&gt;               Estimate    SE               C.I. Conf. Level</span></span>
-<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a><span class="co">#&gt; Raw             -1.580 0.389   [-2.293, -0.867]         0.9</span></span>
-<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a><span class="co">#&gt; Hedges&#39;s g(z)   -1.174 0.411 [-1.8046, -0.4977]         0.9</span></span>
+<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a><span class="co">#&gt;               Estimate     SE               C.I. Conf. Level</span></span>
+<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a><span class="co">#&gt; Raw             -1.580 0.3890   [-2.293, -0.867]         0.9</span></span>
+<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a><span class="co">#&gt; Hedges&#39;s g(z)   -1.174 0.4412 [-1.8046, -0.4977]         0.9</span></span>
 <span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a><span class="co">#&gt; Note: SMD confidence intervals are an approximation. See vignette(&quot;SMD_calcs&quot;).</span></span>
 <span id="cb10-25"><a href="#cb10-25" tabindex="-1"></a></span>
 <span id="cb10-26"><a href="#cb10-26" tabindex="-1"></a>res2b <span class="ot">=</span> <span class="fu">simple_htest</span>(</span>
@@ -631,7 +632,7 @@ setting the formula. This can be demonstrated with the “iris” data.</p>
 <span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a><span class="co">#&gt; Effect Sizes </span></span>
 <span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a><span class="co">#&gt;               Estimate      SE             C.I. Conf. Level</span></span>
 <span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a><span class="co">#&gt; Raw              2.786 0.08002 [2.6536, 2.9184]         0.9</span></span>
-<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a><span class="co">#&gt; Hedges&#39;s g(z)    2.828 0.18257 [2.5252, 3.1244]         0.9</span></span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a><span class="co">#&gt; Hedges&#39;s g(z)    2.828 0.18393 [2.5252, 3.1244]         0.9</span></span>
 <span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a><span class="co">#&gt; Note: SMD confidence intervals are an approximation. See vignette(&quot;SMD_calcs&quot;).</span></span>
 <span id="cb11-25"><a href="#cb11-25" tabindex="-1"></a></span>
 <span id="cb11-26"><a href="#cb11-26" tabindex="-1"></a>res3a <span class="ot">=</span> <span class="fu">simple_htest</span>(</span>
@@ -865,7 +866,7 @@ total.</p>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-diletti1991" class="csl-entry">
 Diletti, E, D Hauschke, and VW Steinijans. 1992. <span>“Sample Size
 Determination for Bioequivalence Assessment by Means of Confidence
