@@ -31,6 +31,10 @@ test_that("Run examples for one sample", {
                      high_eqbound = .5,
                      alpha = 1.22))
   expect_error(t_TOST(Sepal.Width ~ Species, data = iris))
+
+  expect_message({t_TOST(x = samp1,
+                 eqb = .05,
+                 hypothesis = "MET")})
   # Normal one sample ----
 
   test1 = t_TOST(x = samp1,
@@ -1055,22 +1059,26 @@ test_that("Run examples for plot_smd", {
   p1 = plot_smd(lambda = c(test1$smd$d_lambda),
                 df = c(test1$smd$d_df),
                 d = c(test1$smd$d),
-                type = "cd")
+                type = "cd",
+                smd_ci = "goulet")
 
   p1 = plot_smd(lambda = c(test1$smd$d_lambda),
                 df = c(test1$smd$d_df),
                 d = c(test1$smd$d),
-                type = "c")
+                type = "c",
+                smd_ci = "goulet")
 
   p2 = plot_smd(lambda = c(test2$smd$d_lambda),
                 df = c(test2$smd$d_df),
                 d = c(test2$smd$d),
-                type = "cd")
+                type = "cd",
+                smd_ci = "goulet")
 
   p2 = plot_smd(lambda = c(test2$smd$d_lambda),
                 df = c(test2$smd$d_df),
                 d = c(test2$smd$d),
-                type = "c")
+                type = "c",
+                smd_ci = "goulet")
 
 
   expect_error(plot_smd(df = c(test1$smd$d_df),

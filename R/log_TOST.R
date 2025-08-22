@@ -9,16 +9,21 @@
 #' @details
 #' For details on the calculations in this function see `vignette("robustTOST")`.
 #'
-#' For two-sample tests, the test is of \eqn{\bar log(x) - \bar log(y)} (mean of x minus mean of y).
+#' For two-sample tests, the test is of \eqn{\bar{log(x)} - \bar{log(y)}} (mean of log(x) minus mean of log(y)).
 #' For paired samples, the test is of the difference scores (z),
-#' wherein \eqn{z =  log(x) - log(y) = log(x)/log(y)}, and the test is of \eqn{\bar z} (mean of the difference/ratio scores).
+#' wherein \eqn{z = log(x) - log(y) = log(x/y)}, and the test is of \eqn{\bar{z}} (mean of the difference/ratio scores).
+#'
+#' This approach is particularly useful for:
+#' * Bioequivalence studies where FDA guidelines recommend ratio-based bounds
+#' * Data with a multiplicative nature, where ratio comparisons are more meaningful
+#' * Skewed data where log transformation helps normalize the residuals
 #'
 #' @return An S3 object of class
 #'   `"TOSTt`" is returned containing the following slots:
 #'
-#'   - "TOST": A table of class \code{"data.frame"} containing two-tailed t-test and both one-tailed results.
-#'   - "eqb": A table of class \code{"data.frame"} containing equivalence bound settings.
-#'   - "effsize":  table of class \code{"data.frame"} containing effect size estimates.
+#'   - "TOST": A table of class `data.frame` containing two-tailed t-test and both one-tailed results.
+#'   - "eqb": A table of class `data.frame` containing equivalence bound settings.
+#'   - "effsize":  table of class `data.frame`` containing effect size estimates.
 #'   - "hypothesis": String stating the hypothesis being tested
 #'   - "smd": List containing the results of the means ratio calculation.
 #'      - Items include: d (means ratio estimate), dlow (lower CI bound), dhigh (upper CI bound), d_df (degrees of freedom for SMD), d_sigma (SE), d_lambda (non-centrality), J (bias correction), smd_label (type of SMD), d_denom (denominator calculation)
@@ -226,6 +231,12 @@ log_TOST.default = function(x,
       low_eqbound = min(eqb)
     }
 
+  interval_no_zero = test_interval_no_zero(c(log(low_eqbound), log(high_eqbound)))
+
+  if(interval_no_zero){
+    message("Equivalence interval does not include 1.")
+  }
+
 
   if(hypothesis == "EQU"){
     null_hyp = paste0(round(low_eqbound,2),
@@ -275,6 +286,11 @@ log_TOST.default = function(x,
     tTOST = ifelse(abs(low_ttest$statistic) > abs(high_ttest$statistic),
                    low_ttest$statistic,
                    high_ttest$statistic) #Get lowest t-value for summary TOST result
+    if(!interval_no_zero){
+    if(pTOST <= tresult$p.value){
+      message("MET test may have higher error rates than a nil two-tailed test. Consider wider equivalence bounds.")
+    }
+  }
   }
 
 
